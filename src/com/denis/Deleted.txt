@@ -1,0 +1,541 @@
+//    private static byte         sfield_token255_descoff443_staticref86  = 11;
+//    private static byte         sfield_token255_descoff492_staticref93  = 18;
+//    private static byte         sfield_token255_descoff604_staticref109 = 34;
+    // private static byte sfield_token255_descoff429_staticref84 = 9;
+    // private static byte sfield_token255_descoff478_staticref91 = 16;    
+    // private static byte sfield_token255_descoff513_staticref96 = 21;
+    // private static byte sfield_token255_descoff562_staticref103 = 28;
+    // private static byte sfield_token255_descoff541_staticref100 = 25;
+    // private static byte sfield_token255_descoff590_staticref107 = 32;
+    // private static byte sfield_token255_descoff408_staticref81 = 6;
+    // private static byte sfield_token255_descoff457_staticref88 = 13;
+    // private static byte sfield_token255_descoff471_staticref90 = 15;
+    // private static byte sfield_token255_descoff548_staticref101 = 26;
+    // private static byte sfield_token255_descoff597_staticref108 = 33;    
+    // private static byte sfield_token255_descoff366_staticref75 = (byte) 0xFF;    
+    // private static byte sfield_token255_descoff527_staticref98 = 23;
+    // private static byte sfield_token255_descoff576_staticref105 = 30;
+    // private static byte sfield_token255_descoff401_staticref80 = 5;
+    // private static byte sfield_token255_descoff450_staticref87 = 12;
+    // private boolean field_token21_descoff821 = false;
+    // private static byte sfield_token255_descoff226_staticref47;
+    // private static byte sfield_token255_descoff436_staticref85 = 10;
+    // private static byte sfield_token255_descoff485_staticref92 = 17;    
+    // private static byte sfield_token255_descoff520_staticref97 = 22;    
+    // private static byte sfield_token255_descoff506_staticref95 = 20;
+    // private static byte sfield_token255_descoff555_staticref102 = 27;
+        // private static byte sfield_token255_descoff464_staticref89 = 14;
+    // private static boolean sfield_token255_descoff625_staticref112 = true;
+    // private static byte sfield_token255_descoff534_staticref99 = 24;
+    // private static byte sfield_token255_descoff583_staticref106 = 31;    
+ // private static byte sfield_token255_descoff499_staticref94 = 19;
+
+    private void eventMenuSelection() {
+        short var3 = (short) 0;
+        short var4 = (short) 1;
+        this.field_token21_descoff821 = false;
+        short var5 = (short) (sfield_token255_descoff177_staticref40 && sfield_token255_descoff310_staticref64 != 3 ? 0 : 1);
+        
+        while ((short) var4 != 0) {
+            short var6 = (short) 0;
+            short var7 = (short) 0;
+            
+            short var8;
+            short var9;
+            short var10001;
+            try {
+                var8 = (short) 0;
+                var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff485_staticref92], sfield_token255_descoff107_staticref26, (short) var7, false)));
+                short var10000 = (short) var7;
+                var7 = (short) ((short) ((short) var7 + 1));
+                var9 = (short) var10000;
+                var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff555_staticref102], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                var10001 = (short) var7;
+                var7 = (short) ((short) ((short) var7 + 1));
+                sfield_token255_descoff107_staticref26[var10001] = 1;
+                var8 = (short) ((byte) ((short) ((short) var8 + 1)));
+                if ((short) var5 == 0) {
+                    var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff541_staticref100], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                    var10001 = (short) var7;
+                    var7 = (short) ((short) ((short) var7 + 1));
+                    sfield_token255_descoff107_staticref26[var10001] = 2;
+                    var8 = (short) ((byte) ((short) ((short) var8 + 1)));
+                    var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff548_staticref101], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                    var10001 = (short) var7;
+                    var7 = (short) ((short) ((short) var7 + 1));
+                    sfield_token255_descoff107_staticref26[var10001] = 3;
+                    var8 = (short) ((byte) ((short) ((short) var8 + 1)));
+                    var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff506_staticref95], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                    var10001 = (short) var7;
+                    var7 = (short) ((short) ((short) var7 + 1));
+                    sfield_token255_descoff107_staticref26[var10001] = 4;
+                    var8 = (short) ((byte) ((short) ((short) var8 + 1)));
+                    if (sfield_token255_descoff184_staticref41) {
+                        var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff562_staticref103], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                        var10001 = (short) var7;
+                        var7 = (short) ((short) ((short) var7 + 1));
+                        sfield_token255_descoff107_staticref26[var10001] = 5;
+                        var8 = (short) ((byte) ((short) ((short) var8 + 1)));
+                    }
+                }
+                
+                sfield_token255_descoff107_staticref26[(short) var9] = (byte) ((short) var8);
+            } catch (SIMViewException var16) {
+                return;
+            }
+            
+            var6 = (short) this.method_token255_descoff1433(sfield_token255_descoff107_staticref26, (short) 0, (byte) 0);
+            var3 = (short) 0;
+            byte var19;
+            switch ((short) var6) {
+                case 1:
+                    if (!sfield_token255_descoff177_staticref40) {
+                        var19 = this.method_token255_descoff1505(sfield_token255_descoff450_staticref87, sfield_token255_descoff156_staticref37, (byte) -128);
+                        var3 = (short) var19;
+                        if (var19 == 0) {
+                            this.field_token16_descoff786[2] = -1;
+                            flowState = SMS_SENDED;
+                            sfield_token255_descoff128_staticref32 = 1;
+                            sfield_token255_descoff625_staticref112 = !sfield_token255_descoff625_staticref112;
+                            sfield_token255_descoff317_staticref65 = 1;
+                            sfield_token255_descoff149_staticref36 = true;
+                            if (sfield_token255_descoff625_staticref112) {
+                                this.method_token255_descoff1361();
+                                Util.arrayCopy(imeiBuffer, (short) 0, imeiBufferToCompare, (short) 0, (short) 8);
+                            }
+                            
+                            if (this.method_token255_descoff1445()) {
+                                sfield_token255_descoff625_staticref112 = false;
+                                var4 = (short) 0;
+                            } else {
+                                var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff604_staticref109, sfield_token255_descoff156_staticref37, (byte) -128);
+                            }
+                        }
+                        
+                        if ((short) var3 == 16) {
+                            var4 = (short) 0;
+                        }
+                    } else {
+                        do {
+                            var7 = (short) 0;
+                            var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff555_staticref102], sfield_token255_descoff107_staticref26, (short) var7, false)));
+                            var10001 = (short) var7;
+                            var7 = (short) ((short) ((short) var7 + 1));
+                            sfield_token255_descoff107_staticref26[var10001] = 2;
+                            var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff499_staticref94], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                            var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff492_staticref93], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                            var6 = (short) this.method_token255_descoff1433(sfield_token255_descoff107_staticref26, (short) 0, (byte) 9);
+                            if ((short) var6 == 9) {
+                                sfield_token255_descoff135_staticref33 = false;
+                                sfield_token255_descoff142_staticref34 = 0;
+                                if (sfield_token255_descoff310_staticref64 != 1) {
+                                    if (sfield_token255_descoff310_staticref64 == 3) {
+                                        var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff443_staticref86, sfield_token255_descoff156_staticref37, (byte) -128);
+                                    } else {
+                                        sfield_token255_descoff310_staticref64 = 1;
+                                        this.method_token255_descoff1565(true);
+                                        if (!sfield_token255_descoff296_staticref62) {
+                                            var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff569_staticref104, sfield_token255_descoff156_staticref37, (byte) -128);
+                                        } else {
+                                            var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff373_staticref76, sfield_token255_descoff156_staticref37, (byte) -128);
+                                        }
+                                        
+                                        var8 = (short) 0;
+                                        var8 = (short) Util.arrayCopy(sfield_token255_descoff37_staticref6, (short) 0, sfield_token255_descoff107_staticref26, (short) var8, (short) (sfield_token255_descoff37_staticref6[0] + 1));
+                                        var10001 = (short) var8;
+                                        var8 = (short) ((short) ((short) var8 + 1));
+                                        sfield_token255_descoff107_staticref26[var10001] = 2;
+                                        var10001 = (short) var8;
+                                        var8 = (short) ((short) ((short) var8 + 1));
+                                        sfield_token255_descoff107_staticref26[var10001] = 65;
+                                        var10001 = (short) var8;
+                                        var8 = (short) ((short) ((short) var8 + 1));
+                                        sfield_token255_descoff107_staticref26[var10001] = 67;
+                                        this.method_token255_descoff1469(sfield_token255_descoff107_staticref26, (short) 0, (byte) 4, (byte) -76);
+                                    }
+                                } else {
+                                    var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff373_staticref76, sfield_token255_descoff156_staticref37, (byte) -128);
+                                }
+                            } else if ((short) var6 == 10) {
+                                if (sfield_token255_descoff310_staticref64 == 1) {
+                                    sfield_token255_descoff310_staticref64 = 2;
+                                    sfield_token255_descoff135_staticref33 = false;
+                                    this.method_token255_descoff1565(false);
+                                    var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff226_staticref47, sfield_token255_descoff156_staticref37, (byte) -128);
+                                    var8 = (short) 0;
+                                    var8 = (short) Util.arrayCopy(sfield_token255_descoff37_staticref6, (short) 0, sfield_token255_descoff107_staticref26, (short) var8, (short) (sfield_token255_descoff37_staticref6[0] + 1));
+                                    var10001 = (short) var8;
+                                    var8 = (short) ((short) ((short) var8 + 1));
+                                    sfield_token255_descoff107_staticref26[var10001] = 2;
+                                    var10001 = (short) var8;
+                                    var8 = (short) ((short) ((short) var8 + 1));
+                                    sfield_token255_descoff107_staticref26[var10001] = 68;
+                                    var10001 = (short) var8;
+                                    var8 = (short) ((short) ((short) var8 + 1));
+                                    sfield_token255_descoff107_staticref26[var10001] = 65;
+                                    this.method_token255_descoff1469(sfield_token255_descoff107_staticref26, (short) 0, (byte) 4, (byte) -76);
+                                } else if (sfield_token255_descoff310_staticref64 == 3) {
+                                    var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff443_staticref86, sfield_token255_descoff156_staticref37, (byte) -128);
+                                } else {
+                                    var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff226_staticref47, sfield_token255_descoff156_staticref37, (byte) -128);
+                                }
+                            }
+                        }
+                        while ((short) var6 > 0 && (short) var3 != 16);
+                    }
+                    
+                    if ((short) var6 != -9) {
+                        var4 = (short) 0;
+                    }
+                    break;
+                case 2:
+                    var19 = this.method_token255_descoff1505(sfield_token255_descoff478_staticref91, sfield_token255_descoff156_staticref37, (byte) -128);
+                    var3 = (short) var19;
+                    if (var19 == 0) {
+                        var8 = (short) 0;
+                        var8 = (short) Util.arrayCopy(sfield_token255_descoff37_staticref6, (short) 0, sfield_token255_descoff107_staticref26, (short) var8, (short) (sfield_token255_descoff37_staticref6[0] + 1));
+                        var10001 = (short) var8;
+                        var8 = (short) ((short) ((short) var8 + 1));
+                        sfield_token255_descoff107_staticref26[var10001] = 2;
+                        var10001 = (short) var8;
+                        var8 = (short) ((short) ((short) var8 + 1));
+                        sfield_token255_descoff107_staticref26[var10001] = 80;
+                        var10001 = (short) var8;
+                        var8 = (short) ((short) ((short) var8 + 1));
+                        sfield_token255_descoff107_staticref26[var10001] = 82;
+                        if (this.method_token255_descoff1469(sfield_token255_descoff107_staticref26, (short) 0, (byte) 4, (byte) 0)) {
+                            this.field_token16_descoff786[2] = -1;
+                            sfield_token255_descoff135_staticref33 = true;
+                            sfield_token255_descoff142_staticref34 = sfield_token255_descoff303_staticref63;
+                            flowState = SMS_SENDED;
+                            sfield_token255_descoff128_staticref32 = 1;
+                            var4 = (short) 0;
+                        }
+                    } else if ((short) var3 != 17) {
+                        var4 = (short) 0;
+                    }
+                    break;
+                case 3:
+                    if (sfield_token255_descoff212_staticref45 == 0) {
+                        var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff457_staticref88, sfield_token255_descoff156_staticref37, (byte) -128);
+                        var6 = (short) -9;
+                    } else {
+                        do {
+                            try {
+                                var8 = (short) 0;
+                                var7 = (short) 0;
+                                SIMView var11 = SIMSystem.getTheSIMView();
+                                var11.select((short) 16128);
+                                var11.select((short) 32544);
+                                var11.select(DF_FID);
+                                var11.select(EF_FID_1);
+                                var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff548_staticref101], sfield_token255_descoff107_staticref26, (short) var7, false)));
+                                var10001 = (short) var7;
+                                var7 = (short) ((short) ((short) var7 + 1));
+                                sfield_token255_descoff107_staticref26[var10001] = sfield_token255_descoff212_staticref45;
+                                
+                                for (short var12 = (short) 0; (short) var12 < sfield_token255_descoff212_staticref45; var12 = (short) ((byte) ((short) ((short) var12 + 1)))) {
+                                    var9 = (short) ((short) var7);
+                                    var7 = (short) Util.arrayCopy(sfield_token255_descoff51_staticref10, (short) ((short) var8 + 1), sfield_token255_descoff107_staticref26, (short) var7,
+                                            (short) (sfield_token255_descoff51_staticref10[(short) ((short) var8 + 1)] + 1));
+                                    short var10;
+                                    if (this.method_token255_descoff1049(sfield_token255_descoff51_staticref10[(short) var8]) == 0) {
+                                        var10 = (short) ((byte) this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff471_staticref90], sfield_token255_descoff79_staticref18, (short) 0, true));
+                                    } else {
+                                        var10 = (short) ((byte) this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff464_staticref89], sfield_token255_descoff79_staticref18, (short) 0, true));
+                                    }
+                                    
+                                    var10 = (short) ((byte) ((short) ((short) var10 - 1)));
+                                    var7 = (short) Util.arrayCopy(sfield_token255_descoff79_staticref18, (short) 1, sfield_token255_descoff107_staticref26, (short) var7, (short) var10);
+                                    sfield_token255_descoff107_staticref26[(short) var9] = (byte) ((short) (sfield_token255_descoff107_staticref26[(short) var9] + (short) var10));
+                                    var8 = (short) ((short) ((short) var8 + (short) (sfield_token255_descoff51_staticref10[(short) ((short) var8 + 1)] + 2)));
+                                }
+                            } catch (SIMViewException var15) {
+                                return;
+                            }
+                            
+                            var6 = (short) this.method_token255_descoff1433(sfield_token255_descoff107_staticref26, (short) 0, (byte) 1);
+                            if ((short) var6 > 0) {
+                                sfield_token255_descoff219_staticref46 = true;
+                                if (sfield_token255_descoff44_staticref8[(short) ((short) ((short) ((short) var6 - 1) * 2) + 1)] == 1) {
+                                    sfield_token255_descoff44_staticref8[(short) ((short) ((short) ((short) var6 - 1) * 2) + 1)] = 0;
+                                    var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff576_staticref105, sfield_token255_descoff156_staticref37, (byte) -128);
+                                } else {
+                                    sfield_token255_descoff44_staticref8[(short) ((short) ((short) ((short) var6 - 1) * 2) + 1)] = 1;
+                                    var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff583_staticref106, sfield_token255_descoff156_staticref37, (byte) -128);
+                                }
+                            }
+                        }
+                        while ((short) var6 > 0 && (short) var3 != 16);
+                    }
+                    
+                    if ((short) var6 != -9 || (short) var3 == 16) {
+                        var4 = (short) 0;
+                    }
+                    break;
+                case 4:
+                    byte[] var18 = sfield_token255_descoff114_staticref28;
+                    
+                    while ((short) var6 > 0 && (short) var3 != 16) {
+                        SIMView var17;
+                        try {
+                            var7 = (short) 0;
+                            var17 = SIMSystem.getTheSIMView();
+                            var17.select((short) 16128);
+                            var17.select((short) 32544);
+                            var17.select(DF_FID);
+                            var17.select(EF_FID_1);
+                            var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff506_staticref95], sfield_token255_descoff107_staticref26, (short) var7, false)));
+                            var10001 = (short) var7;
+                            var7 = (short) ((short) ((short) var7 + 1));
+                            sfield_token255_descoff107_staticref26[var10001] = 2;
+                            var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff597_staticref108], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                            var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff590_staticref107], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                        } catch (SIMViewException var14) {
+                            return;
+                        }
+                        
+                        var6 = (short) this.method_token255_descoff1433(sfield_token255_descoff107_staticref26, (short) 0, (byte) 13);
+                        if ((short) var6 == 13) {
+                            var18 = sfield_token255_descoff114_staticref28;
+                        } else if ((short) var6 == 14) {
+                            var18 = sfield_token255_descoff121_staticref30;
+                        }
+                        
+                        if ((short) var6 > 0) {
+                            short var1 = (short) ((byte) ((short) var6));
+                            short var2 = (short) 0;
+                            
+                            while ((short) var6 > 0 && (short) var3 != 16) {
+                                try {
+                                    var7 = (short) 0;
+                                    var17 = SIMSystem.getTheSIMView();
+                                    var17.select((short) 16128);
+                                    var17.select((short) 32544);
+                                    var17.select(DF_FID);
+                                    var17.select(EF_FID_1);
+                                    if ((short) var6 == 13) {
+                                        var7 = (short) ((short) ((short) var7
+                                                + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff597_staticref108], sfield_token255_descoff107_staticref26, (short) var7, false)));
+                                    } else {
+                                        var7 = (short) ((short) ((short) var7
+                                                + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff590_staticref107], sfield_token255_descoff107_staticref26, (short) var7, false)));
+                                    }
+                                    
+                                    var10001 = (short) var7;
+                                    var7 = (short) ((short) ((short) var7 + 1));
+                                    sfield_token255_descoff107_staticref26[var10001] = 2;
+                                    var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff520_staticref97], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                                    var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff527_staticref98], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                                } catch (SIMViewException var13) {
+                                    return;
+                                }
+                                
+                                var6 = (short) this.method_token255_descoff1433(sfield_token255_descoff107_staticref26, (short) 0, (byte) 7);
+                                var2 = (short) ((short) var6);
+                                if ((short) var6 > 0) {
+                                    do {
+                                        if (var18[0] == 0) {
+                                            var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff408_staticref81, sfield_token255_descoff156_staticref37, (byte) -128);
+                                            var6 = (short) ((short) var1);
+                                            break;
+                                        }
+                                        
+                                        var6 = (short) this.method_token255_descoff929(var18, (short) 0);
+                                        if ((short) var6 > 0) {
+                                            switch ((short) var2) {
+                                                case 7:
+                                                    var9 = (short) flowState;
+                                                    flowState = 4;
+                                                    var2 = (short) Util.getShort(var18, (short) var6);
+                                                    Util.arrayCopyNonAtomic(var18, (short) ((short) var6 + 2), sfield_token255_descoff107_staticref26, (short) 0, (short) var2);
+                                                    this.shortBuffer[0] = 0;
+                                                    this.method_token255_descoff1217((byte) 1, (byte) 3, true);
+                                                    if (this.field_token21_descoff821) {
+                                                        var6 = (short) -3;
+                                                    }
+                                                    
+                                                    var2 = (short) 7;
+                                                    flowState = (byte) ((short) var9);
+                                                    break;
+                                                case 8:
+                                                    if (this.method_token255_descoff989(var18, (short) var6, true)) {
+                                                        var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff401_staticref80, sfield_token255_descoff156_staticref37, (byte) -128);
+                                                    }
+                                            }
+                                        }
+                                    }
+                                    while ((short) var6 > 0 && (short) var3 != 16);
+                                    
+                                    if ((short) var6 == -9) {
+                                        var6 = (short) ((short) var1);
+                                    }
+                                }
+                            }
+                            
+                            if ((short) var6 == -9) {
+                                var6 = (short) 1;
+                            }
+                        }
+                    }
+                    
+                    if ((short) var6 != -9 || (short) var3 == 16) {
+                        var4 = (short) 0;
+                    }
+                    break;
+                case 5:
+                    do {
+                        var7 = (short) 0;
+                        var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff562_staticref103], sfield_token255_descoff107_staticref26, (short) var7, false)));
+                        var10001 = (short) var7;
+                        var7 = (short) ((short) ((short) var7 + 1));
+                        sfield_token255_descoff107_staticref26[var10001] = 2;
+                        var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff499_staticref94], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                        var7 = (short) ((short) ((short) var7 + this.method_token255_descoff1169(sfield_token255_descoff65_staticref14[sfield_token255_descoff492_staticref93], sfield_token255_descoff107_staticref26, (short) var7, true)));
+                        var6 = (short) this.method_token255_descoff1433(sfield_token255_descoff107_staticref26, (short) 0, (byte) 11);
+                        if ((short) var6 == 11) {
+                            sfield_token255_descoff338_staticref68 = 1;
+                            this.method_token255_descoff1265();
+                            var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff429_staticref84, sfield_token255_descoff156_staticref37, (byte) -128);
+                        } else if ((short) var6 == 12) {
+                            sfield_token255_descoff338_staticref68 = 2;
+                            var3 = (short) this.method_token255_descoff1505(sfield_token255_descoff436_staticref85, sfield_token255_descoff156_staticref37, (byte) -128);
+                        }
+                    }
+                    while ((short) var6 > 0 && (short) var3 != 16);
+                    
+                    if ((short) var6 != -9 || (short) var3 == 16) {
+                        var4 = (short) 0;
+                    }
+                    break;
+                default:
+                    var4 = (short) 0;
+            }
+        }
+        
+    }
+
+    
+    private byte method_token255_descoff1433(byte[] var1, short var2, byte var3) {
+        short var4 = (short) 9;
+        
+        try {
+            ProactiveHandler var7 = ProactiveHandler.getTheHandler();
+            var7.init((byte) 36, (byte) 0, (byte) -126);
+            var7.appendTLV((byte) 5, var1, (short) ((short) var2 + 1), var1[(short) var2]);
+            var2 = (short) ((short) ((short) var2 + (short) (var1[(short) var2] + 1)));
+            short var10001 = (short) var2;
+            var2 = (short) ((short) ((short) var2 + 1));
+            short var8 = (short) ((byte) ((short) (var1[var10001] + (short) var3)));
+            short var5 = (short) ((short) var2);
+            
+            for (short var6 = (short) ((short) var3); (short) var6 < (short) var8; var6 = (short) ((byte) ((short) ((short) var6 + 1)))) {
+                var4 = (short) ((short) ((short) var4 + (short) (3 + var1[(short) var5])));
+                if ((short) var4 <= 255) {
+                    if ((short) var3 != 0) {
+                        var7.appendTLV((byte) 15, (byte) ((short) var6), var1, (short) ((short) var5 + 1), var1[(short) var5]);
+                    } else {
+                        if ((short) var6 != (short) var3) {
+                            ++var5;
+                        }
+                        
+                        var7.appendTLV((byte) 15, var1[(short) ((short) ((short) var5 + 1) + var1[(short) var5])], var1, (short) ((short) var5 + 1), var1[(short) var5]);
+                    }
+                }
+                
+                var5 = (short) ((short) ((short) var5 + (short) (var1[(short) var5] + 1)));
+            }
+            
+            var7.send();
+            ProactiveResponseHandler var9 = ProactiveResponseHandler.getTheHandler();
+            short var10 = (short) var9.getGeneralResult();
+            if ((short) var10 == 0) {
+                return var9.getItemIdentifier();
+            } else if ((short) var10 == 17) {
+                return (byte) -9;
+            } else if ((short) var10 == 18) {
+                return (byte) -10;
+            } else if ((short) var10 == 16) {
+                return (byte) -3;
+            } else {
+                return (byte) -1;
+            }
+        } catch (Exception var11) {
+            return (byte) -1;
+        }
+    }    
+    
+    private short method_token255_descoff929(byte[] var1, short var2) {
+        short var3 = (short) 0;
+        short var4 = (short) var1[(short) var2];
+        if ((short) var4 == 0) {
+            return (short) -2;
+        } else {
+            ProactiveHandler var6 = ProactiveHandler.getTheHandler();
+            var6.init((byte) 36, (byte) 0, (byte) -126);
+            short var7 = (short) ((short) ((short) var2 + 1));
+            
+            short var5;
+            for (short var8 = (short) 0; (short) var8 < (short) var4; var8 = (short) ((byte) ((short) ((short) var8 + 1)))) {
+                Util.setShort(this.byteBuffer, (short) ((short) var8 * 2), (short) var7);
+                var7 = (short) ((short) ((short) var7 + (short) (var1[(short) var7] + 1)));
+                var5 = (short) Util.getShort(var1, (short) var7);
+                var7 = (short) ((short) ((short) var7 + (short) ((short) var5 + 2)));
+            }
+            
+            for (short var9 = (short) ((byte) ((short) ((short) var4 - 1))); (short) var9 >= 0; var9 = (short) ((byte) ((short) ((short) var9 - 1)))) {
+                var7 = (short) Util.getShort(this.byteBuffer, (short) ((short) var9 * 2));
+                var6.appendTLV((byte) 15, (byte) ((short) ((short) var9 + 1)), var1, (short) ((short) var7 + 1), var1[(short) var7]);
+            }
+            
+            var3 = (short) var6.send();
+            if ((short) var3 == 16) {
+                return (short) -3;
+            } else if ((short) var3 == 17) {
+                return (short) -9;
+            } else if ((short) var3 == 18) {
+                return (short) -4;
+            } else if ((short) var3 != 0) {
+                return (short) -8;
+            } else {
+                ProactiveResponseHandler var10 = ProactiveResponseHandler.getTheHandler();
+                var3 = (short) ((byte) ((short) (var10.getItemIdentifier() - 1)));
+                if ((short) var3 < 0) {
+                    return (short) -5;
+                } else {
+                    var7 = (short) ((short) ((short) var2 + 1));
+                    var7 = (short) ((short) ((short) var7 + (short) (var1[(short) var7] + 1)));
+                    
+                    for (short var11 = (short) 0; (short) var11 < (short) var3; var11 = (short) ((byte) ((short) ((short) var11 + 1)))) {
+                        var5 = (short) Util.getShort(var1, (short) var7);
+                        var7 = (short) ((short) ((short) var7 + (short) ((short) var5 + 2)));
+                        var7 = (short) ((short) ((short) var7 + (short) (var1[(short) var7] + 1)));
+                    }
+                    
+                    return (short) var7;
+                }
+            }
+        }
+    }    
+    
+
+        private byte method_token255_descoff1541(byte var1) {
+        short var2 = (short) ((short) ((short) var1 & 15));
+        byte var10000;
+        if ((short) var2 < 10) {
+            var10000 = (byte) ((short) ((short) var2 + 48));
+            var2 = (short) ((byte) ((short) ((short) var2 + 48)));
+            return var10000;
+        } else {
+            var10000 = (byte) ((short) ((short) var2 + 55));
+            var2 = (short) ((byte) ((short) ((short) var2 + 55)));
+            return var10000;
+        }
+    }
+    
+    private void method_token255_descoff1553(byte[] var1, byte var2) {
+        for (short var3 = (short) ((byte) ((short) ((short) var2 - 1))); (short) var3 >= 0; var3 = (short) ((byte) ((short) ((short) var3 - 1)))) {
+            var1[(short) ((short) ((short) var3 * 2) + 1)] = this.method_token255_descoff1541((byte) ((short) ((short) (var1[(short) var3] >> 4) & 15)));
+            var1[(short) ((short) var3 * 2)] = this.method_token255_descoff1541((byte) ((short) (var1[(short) var3] & 15)));
+        }
+    }  
