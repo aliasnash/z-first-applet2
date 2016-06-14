@@ -92,6 +92,11 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     
     private static short        icbMsgRefsCounter;
     
+    // field_token29_descoff877;
+    private byte                shortNumber1LenGlobal                   = 0;
+    // field_token30_descoff884
+    private byte                shortNumber2LenGlobal                   = 0;
+    
     /* UNKNOWN VARS */
     
     public boolean[]            field_token15_descoff779;
@@ -133,7 +138,6 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     private static byte         sfield_token255_descoff331_staticref67  = 1;
     private static short        sfield_token255_descoff667_staticref121 = 1;
     
-    private byte                field_token29_descoff877                = 0;
     public final byte           field_token4_descoff702                 = 1;
     public final byte           field_token11_descoff751                = 2;
     
@@ -167,8 +171,6 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     
     private short               parsedMsgBufferOffset                   = -6;
     // private short field_token23_descoff835 = -6;
-    
-    private byte                field_token30_descoff884                = 0;
     // private static boolean sfield_token255_descoff289_staticref61 = true;
     
     private static byte         sfield_token255_descoff163_staticref38;
@@ -2014,7 +2016,6 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     /* вызывается только с одного места, с function_DO_1 */
     private boolean function_DO_1_1(short bufferOffset, boolean var2, byte headerSecondByte, byte headerThirdByte) {
         short var6 = (short) 0;
-        short var7 = (short) 0;
         short var8 = (short) 0;
         
         short var10 = (short) 0;
@@ -2024,16 +2025,15 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         short var14 = (short) 1;
         short var15 = (short) 0;
         short var16 = (short) 1;
-        short var17 = (short) 0;
         short var19 = (short) 0;
         this.field_token31_descoff891 = false;
-        short var20 = (short) 5;
-        this.field_token25_descoff849 = (byte) (headerSecondByte & 6);
-        short var5 = (short) (headerThirdByte & 15);
+        this.field_token25_descoff849 = (byte) (headerSecondByte & 0x06); // 0x32 & 0x06 = 0x02
+        byte thirdByteLowValue = (byte) (headerThirdByte & 0x0F); // 0x16 & 0x0F = 0x6
         PARSED_MESSAGE[31] = 0;
         
+        // offset = 3
         short offset = (short) (bufferOffset + 1 + 2);
-        // short var10002;
+        
         if (var2) {
             // offset 3 = 0x00
             if (this.method_token255_descoff1049(EXTENDED_BUFFER[offset++]) == 0) {
@@ -2042,249 +2042,257 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         }
         
         if (this.field_token25_descoff849 == 2) {
-            // 0x7F80 = 32640 
+            // 0x7F80 = 32640
             // offset 4 = 0x08 << 7 = 0x0400 & 0x7F80 = 0x0400
-            this.field_token26_descoff856 = (short) ((EXTENDED_BUFFER[offset++] << 7) & 32640);
-//            field_token26_descoff856
+            this.field_token26_descoff856 = (short) ((EXTENDED_BUFFER[offset++] << 7) & 0x7F80);
+            
         } else if (this.field_token25_descoff849 == 4) {
             this.field_token26_descoff856 = Util.getShort(EXTENDED_BUFFER, offset);
             offset = (short) (offset + 2);
         }
         
-        if ((short) (headerThirdByte & -128) != 0) {
+        if ((headerThirdByte & 0x80) != 0) {// 0x80 = -128 (0x16 & 0x80 = 0)
             this.field_token27_descoff863 = true;
         } else {
             this.field_token27_descoff863 = false;
         }
         
-        if ((short) (headerThirdByte & 64) != 0) {
+        if ((headerThirdByte & 0x40) != 0) {// 0x40 = 64 (0x16 & 0x40 = 0)
             this.field_token28_descoff870 = true;
         } else {
             this.field_token28_descoff870 = false;
         }
         
-        if ((short) (headerThirdByte & 32) != 0) {
-            if ((short) (EXTENDED_BUFFER[offset] & sfield_token255_descoff170_staticref39) == 0 && EXTENDED_BUFFER[offset] != 0) {
+        if ((headerThirdByte & 0x20) != 0) {// 0x20 = 32 (0x16 & 0x20 = 0)
+            if ((EXTENDED_BUFFER[offset] & sfield_token255_descoff170_staticref39) == 0 && EXTENDED_BUFFER[offset] != 0) {
                 return false;
             }
-            
             offset++;
         }
         
-        if ((short) (headerThirdByte & 16) != 0) {
-            if ((short) (EXTENDED_BUFFER[offset] & sfield_token255_descoff205_staticref44) == 0 && EXTENDED_BUFFER[offset] != 0) {
+        if ((headerThirdByte & 0x10) != 0) {// 0x10 = 16 (0x16 & 0x10 = 0x10)
+            // offset 5 = 0x90
+            if ((EXTENDED_BUFFER[offset] & sfield_token255_descoff205_staticref44) == 0 && EXTENDED_BUFFER[offset] != 0) {
                 return false;
             }
-            
             offset++;
         }
         
-        if ((short) var5 > 0) {
-            this.field_token29_descoff877 = EXTENDED_BUFFER[offset++];
-            if (this.field_token29_descoff877 > 0) {
-                var7 = (short) this.field_token29_descoff877;
-                if (this.field_token29_descoff877 > 11) {
-                    this.field_token29_descoff877 = 11;
+        byte shortNumberLen = 0;
+        
+        if (thirdByteLowValue > 0) {
+            // offset 6 = 0x03
+            this.shortNumber1LenGlobal = EXTENDED_BUFFER[offset++];
+            if (this.shortNumber1LenGlobal > 0) {
+                shortNumberLen = this.shortNumber1LenGlobal;
+                if (this.shortNumber1LenGlobal > 11) {
+                    this.shortNumber1LenGlobal = 11;
                 }
                 
-                Util.arrayCopy(EXTENDED_BUFFER, offset, PARSED_MESSAGE, (short) 0, this.field_token29_descoff877);
-                offset = (short) (offset + var7);
+                Util.arrayCopy(EXTENDED_BUFFER, offset, PARSED_MESSAGE, (short) 0, this.shortNumber1LenGlobal);
+                offset = (short) (offset + shortNumberLen);
             }
             
-            this.field_token30_descoff884 = EXTENDED_BUFFER[offset++];
-            if (this.field_token30_descoff884 > 0) {
-                var7 = (short) this.field_token30_descoff884;
-                if (this.field_token30_descoff884 > 20) {
-                    this.field_token30_descoff884 = 20;
+            // offset 10 = 0x00
+            this.shortNumber2LenGlobal = EXTENDED_BUFFER[offset++];
+            if (this.shortNumber2LenGlobal > 0) {
+                shortNumberLen = this.shortNumber2LenGlobal;
+                if (this.shortNumber2LenGlobal > 20) {
+                    this.shortNumber2LenGlobal = 20;
                 }
                 
-                Util.arrayCopy(EXTENDED_BUFFER, offset, PARSED_MESSAGE, (short) 11, this.field_token30_descoff884);
-                offset = (short) (offset + var7);
+                Util.arrayCopy(EXTENDED_BUFFER, offset, PARSED_MESSAGE, (short) 11, this.shortNumber2LenGlobal);
+                offset = (short) (offset + shortNumberLen);
             }
+            // offset 11 = 0xF0
         }
         
-        SIMView var21 = SIMSystem.getTheSIMView();
-        var21.select(SIMView.FID_MF);
-        var21.select(SIMView.FID_DF_GSM);
-        var21.select(DF_CELLTICK);
-        var21.select(EF_APP_MESSAGES);
-        short var10000;
-        short var22;
-        short var9 = (short) 0;
+        SIMView sv = SIMSystem.getTheSIMView();
+        sv.select(SIMView.FID_MF);
+        sv.select(SIMView.FID_DF_GSM);
+        sv.select(DF_CELLTICK);
+        sv.select(EF_APP_MESSAGES);
+        
         if (sfield_token255_descoff331_staticref67 != 2 || flowState != READY) {
+            
             short offsetBaseItem = this.findBaseItemsOffset(TAG_BASE_ITEM_NEXT);
             if (offsetBaseItem != -1) {
                 var10 = (short) (var10 + this.readSimMessageValueToBuffer(offsetBaseItem, PARSED_MESSAGE, (short) (32 + var10), true));
-                var11 = var10;
-                var10++;
+                short savedOffset = var10;
                 
-                var22 = (short) -128;
-                PARSED_MESSAGE[32 + var10] = (byte) var22;
                 var10++;
-                PARSED_MESSAGE[32 + var11] = (byte) (var10 - var11 - 1);
+                PARSED_MESSAGE[32 + var10] = (byte) 0x80; // 0x80 = -128;
+                var10++;
+                PARSED_MESSAGE[32 + savedOffset] = (byte) (var10 - savedOffset - 1);
                 PARSED_MESSAGE[31]++;
             }
         }
         
-        for (var22 = (short) 0; (short) var22 < (short) var5 && (short) var22 < (short) var20; var22 = (short) ((byte) ((short) ((short) var22 + 1)))) {
-            var9 = (short) 0;
-            short var23 = (short) EXTENDED_BUFFER[offset];
-            var6 = (short) ((short) ((short) var23 & 112));
-            var16 = (short) 1;
-            var14 = (short) 1;
-            var15 = (short) 0;
-            switch ((short) var6) {
-                case 0:
-                case 32:
-                case 48:
-                case 80:
-                case 96:
-                    if ((short) var6 == 0 && sfield_token255_descoff163_staticref38 != 2 && sfield_token255_descoff163_staticref38 != 3) {
-                        var14 = (short) 0;
+        short limit = 5;
+        short var9 = 0;
+        boolean var17 = false;
+        
+        for (byte counter = 0; counter < thirdByteLowValue && counter < limit; counter++) {
+            short nextByte = EXTENDED_BUFFER[offset];
+            var9 = 0;
+            var16 = 1;
+            var14 = 1;
+            var15 = 0;
+            var6 = (short) (nextByte & 0x70); // 0x70 = 112 (0xF0 & 0x70 = 0x70)
+            
+            switch (var6) {
+                case 0x00:
+                case 0x20: // 0x20 = 32
+                case 0x30: // 0x30 = 48
+                case 0x50: // 0x50 = 80
+                case 0x60: // 0x60 = 96
+                    if (var6 == 0 && sfield_token255_descoff163_staticref38 != 2 && sfield_token255_descoff163_staticref38 != 3) {
+                        var14 = 0;
                     }
                     
-                    var9 = (short) ((short) (1 + (short) ((short) var23 & 15)));
-                    var9 = (short) ((short) ((short) var9 + (short) (1 + (short) (EXTENDED_BUFFER[offset + var9] & 127))));
+                    var9 = (short) (1 + (nextByte & 0x0F)); // 0x0F = 15
+                    var9 = (short) (var9 + 1 + (EXTENDED_BUFFER[offset + var9] & 0x7F)); // 0x7F = 127
                     break;
-                case 16:
-                case 64:
-                    if ((short) var6 == 64) {
+                case 0x10: // 0x10 = 16
+                case 0x40: // 0x40 = 64
+                    if (var6 == 0x40) {
                         this.field_token31_descoff891 = true;
                     }
                     
-                    var9 = (short) ((short) (1 + (short) ((short) var23 & 15)));
+                    var9 = (short) (1 + (nextByte & 0x0F)); // 0x0F = 15
                     break;
-                case 112:
-                    var6 = (short) EXTENDED_BUFFER[offset + 2];
-                    switch ((short) var6) {
+                case 0x70: // 0x70 = 112
+                    // offset 11+2 = 0x11
+                    var6 = EXTENDED_BUFFER[offset + 2];
+                    switch (var6) {
                         case 2:
                         case 3:
-                            var9 = (short) 1;
+                            var9 = 1;
                             
-                            for (var19 = (short) 0; (short) var9 < EXTENDED_BUFFER[offset + 1]; var19 = (short) ((byte) ((short) ((short) var19 + 1)))) {
-                                var9 = (short) ((short) ((short) var9 + (byte) ((short) (EXTENDED_BUFFER[offset + var9 + 1 + 1] + 1))));
+                            for (var19 = 0; var9 < EXTENDED_BUFFER[offset + 1]; var19++) {
+                                var9 = (short) (var9 + EXTENDED_BUFFER[offset + var9 + 1 + 1] + 1);
                             }
                             
-                            if (sfield_token255_descoff191_staticref42 && (short) var19 >= 2) {
-                                var15 = (short) 1;
+                            if (sfield_token255_descoff191_staticref42 && var19 >= 2) {
+                                var15 = 1;
                             }
                             
-                            var19 = (short) 0;
-                            var9 = (short) EXTENDED_BUFFER[offset + 1];
-                            // byte var26 = EXTENDED_BUFFER[(short) ((short) ((short) ((short) var18 + (short) var9) + 1) + 1)];
+                            var19 = 0;
+                            var9 = EXTENDED_BUFFER[offset + 1];
+                            
                             if (EXTENDED_BUFFER[offset + var9 + 4] == 4) {
-                                var19 = (short) 1;
+                                var19 = 1;
                             }
                             
-                            var9 = (short) 1;
+                            var9 = 1;
                     }
                     
-                    if ((short) var15 != 0) {
+                    if (var15 != 0) {
                         break;
                     }
                 default:
-                    var20 = (short) ((byte) ((short) ((short) var20 + 1)));
-                    var16 = (short) 0;
+                    limit++;
+                    var16 = 0;
                     offset = (short) (offset + 2 + EXTENDED_BUFFER[offset + 1]);
+                    // offset 11+2+06 = 0xA0
             }
             
-            if ((short) var16 != 0) {
-                if ((short) var14 != 0) {
+            if (var16 != 0) {
+                if (var14 != 0) {
                     PARSED_MESSAGE[31]++;
                 }
                 
-                var17 = (short) ((short) ((short) var23 & -128) == 0 ? 0 : 1);
-                var13 = (short) 1;
+                var17 = (nextByte & 0x80) == 0 ? false : true; // -128 = 0x80
+                var13 = 1;
                 short var24;
-                if ((short) var17 == 0 && ((short) var15 == 0 || (short) var6 != 2 && (short) var6 != 3 || (short) var19 != 1)) {
-                    if ((short) var14 != 0) {
-                        if ((short) var15 != 0 && ((short) var6 == 2 || (short) var6 == 3)) {
-                            var12 = (short) ((byte) ((short) (EXTENDED_BUFFER[offset + var9 + 2] + 1)));
-                            var11 = (short) this.findBaseItemsOffset(EXTENDED_BUFFER[offset + var9 + 2 + var12 + 1]);
+                if (!var17 && (var15 == 0 || var6 != 2 && var6 != 3 || var19 != 1)) {
+                    if (var14 != 0) {
+                        if (var15 != 0 && (var6 == 2 || var6 == 3)) {
+                            var12 = (short) (EXTENDED_BUFFER[offset + var9 + 2] + 1);
+                            var11 = this.findBaseItemsOffset(EXTENDED_BUFFER[offset + var9 + 2 + var12 + 1]);
                         } else {
-                            var11 = (short) this.findBaseItemsOffset(EXTENDED_BUFFER[offset + var9]);
+                            var11 = this.findBaseItemsOffset(EXTENDED_BUFFER[offset + var9]);
                         }
                         
-                        if ((short) var11 != -1) {
-                            var10 = (short) ((short) ((short) var10 + this.readSimMessageValueToBuffer((short) var11, PARSED_MESSAGE, (short) (32 + (short) var10), true)));
+                        if (var11 != -1) {
+                            var10 = (short) (var10 + this.readSimMessageValueToBuffer(var11, PARSED_MESSAGE, (short) (32 + var10), true));
                         } else {
-                            var13 = (short) 0;
+                            var13 = 0;
                             PARSED_MESSAGE[31]--;
                         }
                     }
                 } else {
-                    var24 = (short) -128;
+                    var24 = 0x80; // -128 = 0x80
                     short var25 = (short) (this.field_token25_descoff849 == 0 ? 0 : 1);
-                    if ((short) var15 != 0 && ((short) var6 == 2 || (short) var6 == 3)) {
+                    if (var15 != 0 && (var6 == 2 || var6 == 3)) {
                         var9 = (short) (var9 + 2);
-                        var12 = (short) ((byte) ((short) (EXTENDED_BUFFER[offset + var9] + 1)));
-                        var9 = (short) ((short) ((short) var9 + (short) var12));
-                        if ((short) var19 == 1) {
-                            var12 = (short) ((byte) ((short) (EXTENDED_BUFFER[offset + var9] + 1)));
-                            var9 = (short) ((short) ((short) var9 + (short) ((short) ((short) ((short) var12 + 1) + 1) + 1)));
-                            var12 = (short) ((byte) ((short) (EXTENDED_BUFFER[offset + var9] + 1)));
-                            var9 = (short) ((short) ((short) var9 + (short) var12));
-                            var8 = (short) EXTENDED_BUFFER[offset + var9];
+                        var12 = (short) (EXTENDED_BUFFER[offset + var9] + 1);
+                        var9 = (short) (var9 + var12);
+                        if (var19 == 1) {
+                            var12 = (short) (EXTENDED_BUFFER[offset + var9] + 1);
+                            var9 = (short) (var9 + var12 + 1 + 1 + 1);
+                            var12 = (short) (EXTENDED_BUFFER[offset + var9] + 1);
+                            var9 = (short) (var9 + var12);
+                            var8 = EXTENDED_BUFFER[offset + var9];
                         } else {
-                            var8 = (short) EXTENDED_BUFFER[offset + var9];
+                            var8 = EXTENDED_BUFFER[offset + var9];
                         }
                     } else {
                         var8 = (short) EXTENDED_BUFFER[offset + var9];
-                        var12 = (short) ((byte) ((short) ((short) var8 + 1)));
+                        var12 = (short) (var8 + 1);
                     }
                     
-                    if ((short) var8 > 40) {
-                        var8 = (short) 40;
+                    if (var8 > 40) {
+                        var8 = 40;
                     }
                     
                     if (this.field_token25_descoff849 != 2 && this.field_token25_descoff849 != 4) {
-                        if ((short) var14 != 0) {
-                            if ((short) var25 != 0) {
-                                PARSED_MESSAGE[(short) (32 + (short) var10)] = (byte) ((short) ((short) var8 + 1));
-                                PARSED_MESSAGE[(short) ((short) (32 + (short) var10) + 1)] = (byte) ((short) var24);
+                        if (var14 != 0) {
+                            if (var25 != 0) {
+                                PARSED_MESSAGE[32 + var10] = (byte) (var8 + 1);
+                                PARSED_MESSAGE[32 + var10 + 1] = (byte) var24;
                                 var10 = (short) (var10 + 2);
                             } else {
                                 PARSED_MESSAGE[32 + var10] = (byte) ((short) var8);
                                 var10++;
                             }
                             
-                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + var9 + 1), PARSED_MESSAGE, (short) (32 + (short) var10), (short) var8);
-                            if ((short) var15 == 0) {
-                                var9 = (short) ((short) ((short) var9 + (short) var12));
+                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + var9 + 1), PARSED_MESSAGE, (short) (32 + var10), var8);
+                            if (var15 == 0) {
+                                var9 = (short) (var9 + var12);
                             }
                             
-                            var10 = (short) ((short) ((short) var10 + (short) var8));
+                            var10 = (short) (var10 + var8);
                         }
                     } else {
-                        if ((short) var14 != 0) {
-                            var8 = (short) ((byte) this.method_token255_descoff977(EXTENDED_BUFFER, (short) (offset + var9), PARSED_MESSAGE, (short) (32 + (short) ((short) var10 + 2))));
-                            PARSED_MESSAGE[(short) (32 + (short) var10)] = (byte) ((short) (((short) var8 > 40 ? 40 : (short) var8) + 1));
-                            PARSED_MESSAGE[(short) ((short) (32 + (short) var10) + 1)] = (byte) ((short) var24);
-                            var10 = (short) ((short) ((short) var10 + (short) (PARSED_MESSAGE[(short) (32 + (short) var10)] + 1)));
+                        if (var14 != 0) {
+                            var8 = this.method_token255_descoff977(EXTENDED_BUFFER, (short) (offset + var9), PARSED_MESSAGE, (short) (32 + var10 + 2));
+                            PARSED_MESSAGE[32 + var10] = (byte) ((var8 > 40 ? 40 : var8) + 1);
+                            PARSED_MESSAGE[32 + var10 + 1] = (byte) var24;
+                            var10 = (short) (var10 + PARSED_MESSAGE[32 + var10] + 1);
                         }
                         
-                        if ((short) var15 == 0) {
-                            var9 = (short) ((short) ((short) var9 + (short) var12));
+                        if (var15 == 0) {
+                            var9 = (short) (var9 + var12);
                         }
                     }
                 }
                 
-                if ((short) var14 == 0) {
-                    var13 = (short) 0;
+                if (var14 == 0) {
+                    var13 = 0;
                 }
                 
-                if ((short) var13 != 0) {
-                    var10000 = (short) var10;
-                    var10 = (short) ((short) ((short) var10 + 1));
-                    var11 = (short) var10000;
-                    PARSED_MESSAGE[(short) (32 + (short) var10)] = (byte) ((short) var6);
+                if (var13 != 0) {
+                    var11 = var10;
+                    var10++;
+                    PARSED_MESSAGE[32 + var10] = (byte) var6;
                     var10++;
                 }
                 
-                var8 = (short) ((short) ((short) var23 & 15));
-                var7 = (short) ((short) var8);
-                if ((short) var8 > 11) {
-                    var8 = (short) 11;
+                var8 = (short) (nextByte & 15);
+                shortNumberLen = (byte) var8;
+                if (var8 > 11) {
+                    var8 = 11;
                 }
                 
                 if (var6 == 16 || var6 == 0 || var6 == 48 || var6 == 32 || var6 == 96 || var6 == 80) {
@@ -2306,65 +2314,65 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                             Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) (32 + var10), var8);
                             var10 = (short) (var10 + var8);
                         } else {
-                            PARSED_MESSAGE[32 + var10] = (byte) (this.field_token29_descoff877 + 1);
+                            PARSED_MESSAGE[32 + var10] = (byte) (this.shortNumber1LenGlobal + 1);
                             if (var6 != 16) {
-                                var24 = (short) ((this.field_token29_descoff877 - 1) * 2);
-                                if ((PARSED_MESSAGE[this.field_token29_descoff877 - 1] & -16) == -16) {
+                                var24 = (short) ((this.shortNumber1LenGlobal - 1) * 2);
+                                if ((PARSED_MESSAGE[this.shortNumber1LenGlobal - 1] & 0xF0) == 0xF0) { // 0xF0 = -16
                                     var24--;
                                 }
                             } else {
-                                var24 = this.field_token29_descoff877;
+                                var24 = this.shortNumber1LenGlobal;
                             }
                             
                             var10++;
                             PARSED_MESSAGE[32 + var10] = (byte) var24;
                             var10++;
-                            Util.arrayCopy(PARSED_MESSAGE, (short) 0, PARSED_MESSAGE, (short) (32 + var10), this.field_token29_descoff877);
-                            var10 = (short) (var10 + this.field_token29_descoff877);
+                            Util.arrayCopy(PARSED_MESSAGE, (short) 0, PARSED_MESSAGE, (short) (32 + var10), this.shortNumber1LenGlobal);
+                            var10 = (short) (var10 + this.shortNumber1LenGlobal);
                         }
                     }
                     
-                    offset = (short) (offset + 1 + var7);
+                    offset = (short) (offset + 1 + shortNumberLen);
                 }
                 
-                if ((short) var6 == 0 || (short) var6 == 48 || (short) var6 == 32 || (short) var6 == 96 || (short) var6 == 80) {
-                    var24 = (short) EXTENDED_BUFFER[offset];
-                    var8 = (short) ((short) ((short) var24 & 127));
-                    var7 = (short) ((short) var8);
-                    if ((short) var8 > 20) {
-                        var8 = (short) 20;
+                if (var6 == 0 || var6 == 48 || var6 == 32 || var6 == 96 || var6 == 80) {
+                    var24 = EXTENDED_BUFFER[offset];
+                    var8 = (short) (var24 & 0x7F); // 0x7F = 127
+                    shortNumberLen = (byte) var8;
+                    if (var8 > 20) {
+                        var8 = 20;
                     }
                     
-                    if ((short) var13 != 0) {
-                        if ((short) var8 > 0) {
-                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) ((short) (32 + (short) var10) + 1), (short) var8);
+                    if (var13 != 0) {
+                        if (var8 > 0) {
+                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) (32 + var10 + 1), var8);
                         } else {
-                            var8 = (short) this.field_token30_descoff884;
-                            Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) ((short) (32 + (short) var10) + 1), (short) var8);
+                            var8 = this.shortNumber2LenGlobal;
+                            Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) (32 + var10 + 1), var8);
                         }
                         
-                        if ((short) ((short) var24 & -128) != 0) {
-                            PARSED_MESSAGE[(short) ((short) ((short) (32 + (short) var10) + (short) var8) + 1)] = 32;
-                            PARSED_MESSAGE[(short) ((short) ((short) (32 + (short) var10) + (short) var8) + 2)] = (byte) ((short) ((short) ((short) var22 + 1) + 48));
-                            var8 = (short) ((byte) ((short) ((short) var8 + 2)));
+                        if ((var24 & 0x80) != 0) { // -128 = 0x80
+                            PARSED_MESSAGE[32 + var10 + var8 + 1] = 32;
+                            PARSED_MESSAGE[32 + var10 + var8 + 2] = (byte) (counter + 1 + 48);
+                            var8 = (short) (var8 + 2);
                         }
                         
-                        if ((short) var6 == 0) {
-                            PARSED_MESSAGE[(short) ((short) ((short) (32 + (short) var10) + (short) var8) + 1)] = 32;
-                            PARSED_MESSAGE[(short) ((short) ((short) (32 + (short) var10) + (short) var8) + 2)] = (byte) ((short) (sfield_token255_descoff163_staticref38 + 48));
-                            var8 = (short) ((byte) ((short) ((short) var8 + 2)));
+                        if (var6 == 0) {
+                            PARSED_MESSAGE[32 + var10 + var8 + 1] = 32;
+                            PARSED_MESSAGE[32 + var10 + var8 + 2] = (byte) (sfield_token255_descoff163_staticref38 + 48);
+                            var8 = (short) (var8 + 2);
                         }
                         
-                        PARSED_MESSAGE[(short) (32 + (short) var10)] = (byte) ((short) var8);
-                        var10 = (short) ((short) ((short) var10 + (byte) ((short) ((short) var8 + 1))));
+                        PARSED_MESSAGE[32 + var10] = (byte) var8;
+                        var10 = (short) (var10 + var8 + 1);
                     }
                     
-                    offset = (short) (offset + var7 + 1);
+                    offset = (short) (offset + shortNumberLen + 1);
                 }
                 
                 if ((short) var6 == 2 || (short) var6 == 3) {
                     var8 = (short) EXTENDED_BUFFER[offset + 1 + 2];
-                    var7 = (short) ((short) var8);
+                    shortNumberLen = (byte) var8;
                     if ((short) var8 > 20) {
                         var8 = (short) 20;
                     }
@@ -2373,7 +2381,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                         if ((short) var8 > 0) {
                             Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1 + 3), PARSED_MESSAGE, (short) ((short) (32 + (short) var10) + 1), (short) var8);
                         } else {
-                            var8 = (short) this.field_token30_descoff884;
+                            var8 = this.shortNumber2LenGlobal;
                             Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) ((short) (32 + (short) var10) + 1), (short) var8);
                         }
                         
@@ -2386,15 +2394,15 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     offset = (short) (offset + EXTENDED_BUFFER[offset + 1] + 1 + 1);
                     if ((short) var19 == 1) {
                         offset = (short) (offset + EXTENDED_BUFFER[offset + 1] + 1 + 1);
-                        var20++;
-                        var22++;
+                        limit++;
+                        counter++;
                     }
                 } else {
                     if ((short) var6 == 64) {
                         offset++;
                     }
                     
-                    if ((short) var17 != 0) {
+                    if (var17) {
                         offset = (short) (offset + var12);
                     } else {
                         offset++;
