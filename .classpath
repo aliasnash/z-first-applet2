@@ -7,6 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/sim.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files (x86)/Oracle/Java Card Development Kit 3.0.5u1/lib/api_classic.jar"/>
+	<classpathentry kind="lib" path="/opt/devtools/java_card222/lib/api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

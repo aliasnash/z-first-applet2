@@ -72,6 +72,8 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     private static byte         baseItemsCount;
     
     private static boolean      imeiFlag;
+    // private boolean field_token24_descoff842;
+    private boolean             moreCycles;
     
     // У с л у г а в к л ю ч е н а
     private static byte         PROMPT_INDEX_SERVICE_ON                 = 1;
@@ -105,7 +107,6 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     
     private boolean             field_token27_descoff863;
     
-    // private static boolean sfield_token255_descoff219_staticref46;
     private static byte         sfield_token255_descoff268_staticref56;
     private static short        sfield_token255_descoff142_staticref34;
     
@@ -116,23 +117,18 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     public final byte           field_token2_descoff688                 = 6;
     private byte                field_token25_descoff849                = 0;
     
-    // private byte field_token32_descoff898 = 0;
     public final byte           field_token7_descoff723                 = 1;
     public final byte           field_token14_descoff772                = 5;
     private static byte         sfield_token255_descoff128_staticref32;
     private static boolean      sfield_token255_descoff177_staticref40;
     private static byte         sfield_token255_descoff212_staticref45;
-    // private static short sfield_token255_descoff261_staticref54;
     public final byte           field_token5_descoff709                 = 2;
     public final byte           field_token12_descoff758                = 3;
     private static boolean      sfield_token255_descoff632_staticref113 = true;
     public final byte           field_token1_descoff681                 = 3;
     
-    private boolean             field_token24_descoff842;
-    
     private boolean             field_token31_descoff891                = false;
     private static short        sfield_token255_descoff247_staticref50;
-    // private static boolean sfield_token255_descoff296_staticref62 = true;
     
     private static byte         sfield_token255_descoff170_staticref39;
     private static byte         sfield_token255_descoff331_staticref67  = 1;
@@ -141,7 +137,6 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     public final byte           field_token4_descoff702                 = 1;
     public final byte           field_token11_descoff751                = 2;
     
-    // private static boolean sfield_token255_descoff240_staticref49;
     public final byte           field_token9_descoff737                 = 0;
     public byte[]               field_token16_descoff786;
     
@@ -170,8 +165,6 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     public final byte           field_token0_descoff674                 = 3;
     
     private short               parsedMsgBufferOffset                   = -6;
-    // private short field_token23_descoff835 = -6;
-    // private static boolean sfield_token255_descoff289_staticref61 = true;
     
     private static byte         sfield_token255_descoff163_staticref38;
     public final byte           field_token10_descoff744                = 1;
@@ -329,7 +322,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     
     // method_token255_descoff1529
     /* вызывается только с одного места, с processShowMessageAndParseResult */
-    private void method_token255_descoff1529(boolean isCyrilic, byte[] buffer, short bufferOffset, short maxLength) {
+    private void copyBufferToParsedMessage(boolean isCyrilic, byte[] buffer, short bufferOffset, short maxLength) {
         short len = 0;
         short msgOffset = 601;
         
@@ -626,7 +619,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     
     // method_token255_descoff1025
     /* вызывается только с одного места, с processDataMessage */
-    private void processShowMessageAndParseResult(boolean isCyrilic, byte var2, short var3, boolean var4, boolean var5) {
+    private void processShowMessageAndParseResult(boolean isCyrilic, byte var2, short var3, boolean var4, boolean isSmsSource) {
         short maxLength = 0;
         short bufferMessageOffset = var3;
         short var9 = (short) 0;
@@ -659,10 +652,10 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     }
                     
                     bufferMessageOffset = (short) (bufferMessageOffset + var12);
-                    if (var5 || this.field_token31_descoff891) {
-                        this.method_token255_descoff1529(isCyrilic, EXTENDED_BUFFER, bufferMessageOffset, maxLength);
+                    if (isSmsSource || this.field_token31_descoff891) {
+                        this.copyBufferToParsedMessage(isCyrilic, EXTENDED_BUFFER, bufferMessageOffset, maxLength);
                         this.field_token31_descoff891 = false;
-                        if (var5) {
+                        if (isSmsSource) {
                             this.method_token255_descoff1517(sfield_token255_descoff114_staticref28, this.shortBuffer[0], this.shortBuffer[4], false);
                         }
                     }
@@ -671,7 +664,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                         return;
                     }
                     
-                    var5 = false;
+                    isSmsSource = false;
                     if (isCyrilic) {
                         displayTextRes = this.displayText(dataCoding, EXTENDED_BUFFER, bufferMessageOffset, maxLength > 159 ? 158 : maxLength);
                     } else {
@@ -987,100 +980,83 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         }
     }
     
-    private byte method_token255_descoff1049(byte value) {
-        short var3 = sfield_token255_descoff212_staticref45;
-        if (value == 0) {
-            return 1;
-        } else {
-            for (byte i = 0; i < (short) var3; i++) {
-                if (sfield_token255_descoff44_staticref8[i * 2] == value) {
-                    if (sfield_token255_descoff44_staticref8[i * 2 + 1] == 1) {
-                        return 1;
-                    }
-                    
-                    return 0;
-                }
-            }
-            
-            return 2;
-        }
-    }
-    
     private boolean method_token255_descoff1517(byte[] var1, short var2, short var3, boolean var4) {
-        short var5 = (short) (var1 == sfield_token255_descoff114_staticref28 ? sfield_token255_descoff660_staticref119 : sfield_token255_descoff667_staticref121);
-        short var6 = (short) PARSED_MESSAGE[600];
-        short var7 = (short) ((short) ((short) ((short) ((short) ((short) var3 + (short) var6) + 1) + 2) - (short) (577 - (short) var5)));
-        if ((short) var7 > 0) {
+        short var5 = (var1 == sfield_token255_descoff114_staticref28 ? sfield_token255_descoff660_staticref119 : sfield_token255_descoff667_staticref121);
+        short var6 = PARSED_MESSAGE[600];
+        short var7 = (short) (var3 + var6 + 1 + 2 - 577 - var5);
+        if (var7 > 0) {
             if (var4 && this.readAndDisplayText(PROMPT_INDEX_REMOVE_MESSAGES) != 0) {
                 return false;
             }
             
-            if (!this.method_token255_descoff989(var1, (short) var7, false)) {
+            if (!this.method_token255_descoff989(var1, var7, false)) {
                 return false;
             }
             
-            var5 = (short) (var1 == sfield_token255_descoff114_staticref28 ? sfield_token255_descoff660_staticref119 : sfield_token255_descoff667_staticref121);
+            var5 = (var1 == sfield_token255_descoff114_staticref28 ? sfield_token255_descoff660_staticref119 : sfield_token255_descoff667_staticref121);
         }
         
-        while ((short) (9 + (short) (24 * (short) (var1[0] + 1))) > 255) {
+        while ((9 + (24 * (var1[0] + 1))) > 255) {
             if (!this.method_token255_descoff989(var1, (short) 2, false)) {
                 return false;
             }
             
-            var5 = (short) (var1 == sfield_token255_descoff114_staticref28 ? sfield_token255_descoff660_staticref119 : sfield_token255_descoff667_staticref121);
+            var5 = (var1 == sfield_token255_descoff114_staticref28 ? sfield_token255_descoff660_staticref119 : sfield_token255_descoff667_staticref121);
         }
         
-        Util.arrayCopy(PARSED_MESSAGE, (short) 600, var1, (short) var5, (short) ((short) var6 + 1));
-        Util.setShort(var1, (short) ((short) ((short) var5 + (short) var6) + 1), (short) var3);
-        Util.arrayCopyNonAtomic(EXTENDED_BUFFER, (short) var2, var1, (short) ((short) ((short) ((short) var5 + (short) var6) + 1) + 2), (short) var3);
-        var5 = (short) ((short) ((short) var5 + (short) ((short) ((short) ((short) var6 + (short) var3) + 1) + 2)));
+        Util.arrayCopy(PARSED_MESSAGE, (short) 600, var1, var5, (short) (var6 + 1));
+        Util.setShort(var1, (short) (var5 + var6 + 1), var3);
+        Util.arrayCopyNonAtomic(EXTENDED_BUFFER, var2, var1, (short) (var5 + var6 + 1 + 2), var3);
+        var5 = (short) (var5 + var6 + var3 + 1 + 2);
         if (var1 == sfield_token255_descoff114_staticref28) {
-            sfield_token255_descoff660_staticref119 = (short) var5;
+            sfield_token255_descoff660_staticref119 = var5;
         } else {
-            sfield_token255_descoff667_staticref121 = (short) var5;
+            sfield_token255_descoff667_staticref121 = var5;
         }
         
-        var1[0] = (byte) ((short) (var1[0] + 1));
+        var1[0]++;
         return true;
     }
     
-    private byte method_token255_descoff1229(short var1, byte var2, byte var3) {
+    // method_token255_descoff1229
+    /* вызывается только с одного места, с function_DO_1 */
+    private byte processEachPartsOfMessage(short bufferOffset, byte headerSecondByte, byte headerThirdByte) {
         short var4 = (short) 0;
         short var5 = (short) 0;
         short var6 = (short) 0;
         short var7 = (short) 0;
         short var8 = (short) 0;
-        short var9 = (short) ((short) ((short) var3 & 15));
+        byte messagePartCount = (byte) (headerThirdByte & 0x0F); // будет 4 если байт = 14 из примера
         short var11 = (short) (sfield_token255_descoff149_staticref36 ? 1 : 0);
-        short var10 = (short) ((short) ((short) ((short) var1 + 1) + 2));
+        short offset = (short) (bufferOffset + 1 + 2);
         
-        for (short var12 = (short) 0; (short) var12 < (short) var9; var12 = (short) ((byte) ((short) ((short) var12 + 1)))) {
-            short var13 = (short) EXTENDED_BUFFER[(short) var10];
-            short var14 = (short) ((short) (EXTENDED_BUFFER[(short) ((short) var10 + 1)] & 255));
-            var10 = (short) (var10 + 2);
+        for (byte i = 0; i < messagePartCount; i++) {
+            byte bufferValue = EXTENDED_BUFFER[offset]; // от 3 до 15 (low value)
+            byte nextBufferValue = (byte) (EXTENDED_BUFFER[offset + 1] & 0xFF);
+            offset = (short) (offset + 2);
             short var15;
             SIMView var16;
             short var10001;
             short var20;
-            switch ((short) var13) {
+            switch (bufferValue) {
                 case 3:
                     sfield_token255_descoff632_staticref113 = true;
                     Util.arrayCopy(imeiBuffer, (short) 0, imeiBufferToCompare, (short) 0, (short) 8);
                     var15 = (short) (sfield_token255_descoff177_staticref40 ? 1 : 0);
                     sfield_token255_descoff149_staticref36 = false;
-                    sfield_token255_descoff163_staticref38 = EXTENDED_BUFFER[(short) ((short) var10 + 5)];
-                    sfield_token255_descoff170_staticref39 = EXTENDED_BUFFER[(short) ((short) var10 + 6)];
-                    sfield_token255_descoff639_staticref114 = (short) (EXTENDED_BUFFER[(short) ((short) var10 + 7)] & -128) != 0;
-                    sfield_token255_descoff177_staticref40 = (short) (EXTENDED_BUFFER[(short) ((short) var10 + 7)] & 64) != 0;
-                    sfield_token255_descoff184_staticref41 = (short) (EXTENDED_BUFFER[(short) ((short) var10 + 7)] & 32) != 0;
-                    sfield_token255_descoff191_staticref42 = (short) (EXTENDED_BUFFER[(short) ((short) var10 + 7)] & 16) != 0;
+                    sfield_token255_descoff163_staticref38 = EXTENDED_BUFFER[offset + 5];
+                    sfield_token255_descoff170_staticref39 = EXTENDED_BUFFER[offset + 6];
+                    sfield_token255_descoff639_staticref114 = (EXTENDED_BUFFER[offset + 7] & -128) != 0;
+                    sfield_token255_descoff177_staticref40 = (EXTENDED_BUFFER[offset + 7] & 64) != 0;
+                    sfield_token255_descoff184_staticref41 = (EXTENDED_BUFFER[offset + 7] & 32) != 0;
+                    sfield_token255_descoff191_staticref42 = (EXTENDED_BUFFER[offset + 7] & 16) != 0;
                     if (!sfield_token255_descoff177_staticref40) {
                         sfield_token255_descoff317_staticref65 = sfield_token255_descoff310_staticref64;
                         sfield_token255_descoff310_staticref64 = 2;
                         sfield_token255_descoff247_staticref50 = sfield_token255_descoff254_staticref52 = sfield_token255_descoff646_staticref115;
                         sfield_token255_descoff135_staticref33 = false;
                         this.workWithICBchannel(true);
-                        return (byte) 2;
+                        return 2; // show message Phone not support
                     }
                     
                     if ((short) var15 == 0) {
@@ -1094,13 +1070,13 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                         isAllowPlaySound = false;
                     }
                     
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 4:
-                    var15 = (short) 0;
-                    var20 = (short) 0;
-                    var4 = (short) (EXTENDED_BUFFER[(short) var10] > 10 ? 10 : EXTENDED_BUFFER[(short) var10]);
-                    var7 = (short) ((short) ((short) var10 + 1));
+                    var15 = 0;
+                    var20 = 0;
+                    var4 = (short) (EXTENDED_BUFFER[offset] > 10 ? 10 : EXTENDED_BUFFER[offset]);
+                    var7 = (short) (offset + 1);
                     
                     for (var5 = (short) 0; (short) var5 < (short) var4; var5 = (short) ((byte) ((short) ((short) var5 + 1)))) {
                         var10001 = (short) var20;
@@ -1136,10 +1112,10 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     
                     Util.arrayCopy(this.byteBuffer, (short) 0, sfield_token255_descoff44_staticref8, (short) 0, (short) var15);
                     sfield_token255_descoff212_staticref45 = (byte) ((short) var4);
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 5:
-                    var15 = (short) ((short) var10);
+                    var15 = offset;
                     baseItemsCount = 0;
                     var7 = (short) ((short) (BASE_ITEM_OFFSET_HOLDER[BASE_ITEMS_LENGTH_OFFSET] + 1));
                     var20 = (short) (EXTENDED_BUFFER[(short) var15] > 12 ? 12 : EXTENDED_BUFFER[(short) var15]);
@@ -1181,32 +1157,32 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                         var15 = (short) ((short) ((short) var15 + (short) var8));
                     }
                     
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 6:
-                    sfield_token255_descoff303_staticref63 = EXTENDED_BUFFER[(short) ((short) var10 + 2)];
-                    if ((short) var14 > 4) {
-                        sfield_token255_descoff646_staticref115 = Util.makeShort((byte) 0, EXTENDED_BUFFER[(short) ((short) var10 + 3)]);
-                        sfield_token255_descoff653_staticref117 = Util.makeShort((byte) 0, EXTENDED_BUFFER[(short) ((short) var10 + 4)]);
+                    sfield_token255_descoff303_staticref63 = EXTENDED_BUFFER[offset + 2];
+                    if (nextBufferValue > 4) {
+                        sfield_token255_descoff646_staticref115 = Util.makeShort((byte) 0, EXTENDED_BUFFER[offset + 3]);
+                        sfield_token255_descoff653_staticref117 = Util.makeShort((byte) 0, EXTENDED_BUFFER[offset + 4]);
                     }
                     
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 7:
                     // update ON SIM short number on 15 index
                     
-                    var15 = (short) EXTENDED_BUFFER[(short) var10];
+                    var15 = (short) EXTENDED_BUFFER[offset];
                     if ((short) var15 > 1 && (short) var15 <= 12) {
-                        Util.arrayCopy(EXTENDED_BUFFER, (short) var10, BUFFER_FOR_NUMBERS, (short) 0, (short) ((short) var15 + 1));
+                        Util.arrayCopy(EXTENDED_BUFFER, offset, BUFFER_FOR_NUMBERS, (short) 0, (short) ((short) var15 + 1));
                         var16 = SIMSystem.getTheSIMView();
                         var16.select(SIMView.FID_MF);
                         var16.select(SIMView.FID_DF_GSM);
                         var16.select(DF_CELLTICK);
                         var16.select(EF_APP_MESSAGES);
-                        var16.updateBinary((short) 15, EXTENDED_BUFFER, (short) var10, (short) ((short) var15 + 1));
+                        var16.updateBinary((short) 15, EXTENDED_BUFFER, offset, (short) (var15 + 1));
                     }
                     
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 8:
                     // update ON SIM icb channel on 29 index
@@ -1214,8 +1190,8 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                         this.workWithICBchannel(false);
                     }
                     
-                    CHANNEL_2 = Util.getShort(EXTENDED_BUFFER, (short) var10);
-                    CHANNEL_1 = Util.makeShort(EXTENDED_BUFFER[(short) ((short) var10 + 1)], EXTENDED_BUFFER[(short) var10]);
+                    CHANNEL_2 = Util.getShort(EXTENDED_BUFFER, offset);
+                    CHANNEL_1 = Util.makeShort(EXTENDED_BUFFER[offset + 1], EXTENDED_BUFFER[offset]);
                     if (sfield_token255_descoff310_staticref64 == 1) {
                         this.workWithICBchannel(true);
                     }
@@ -1225,87 +1201,88 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     var19.select(SIMView.FID_DF_GSM);
                     var19.select(DF_CELLTICK);
                     var19.select(EF_APP_MESSAGES);
-                    var19.updateBinary((short) 29, EXTENDED_BUFFER, (short) var10, (short) 2);
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    var19.updateBinary((short) 29, EXTENDED_BUFFER, offset, (short) 2);
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 9:
-                    if (EXTENDED_BUFFER[(short) var10] == 1 && sfield_token255_descoff184_staticref41) {
+                    if (EXTENDED_BUFFER[offset] == 1 && sfield_token255_descoff184_staticref41) {
                         isAllowPlaySound = true;
-                    } else if (EXTENDED_BUFFER[(short) var10] == 2) {
+                    } else if (EXTENDED_BUFFER[offset] == 2) {
                         isAllowPlaySound = false;
                     }
                     
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 10:
-                    if (EXTENDED_BUFFER[(short) var10] == 2) {
+                    if (EXTENDED_BUFFER[offset] == 2) {
                         sfield_token255_descoff331_staticref67 = 2;
-                    } else if (EXTENDED_BUFFER[(short) var10] == 1) {
+                    } else if (EXTENDED_BUFFER[offset] == 1) {
                         sfield_token255_descoff331_staticref67 = 1;
                     }
                     
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 11:
-                    sfield_token255_descoff205_staticref44 = EXTENDED_BUFFER[(short) var10];
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    sfield_token255_descoff205_staticref44 = EXTENDED_BUFFER[offset];
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 12:
                     this.getImeiFromME();
                     this.sendImeiBySMSToUser();
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 13:
                     // update ON SIM SMMC number on 2 index
-                    var15 = (short) EXTENDED_BUFFER[(short) var10];
+                    var15 = (short) EXTENDED_BUFFER[offset];
                     if ((short) var15 > 1 && (short) var15 < 12) {
-                        Util.arrayCopy(EXTENDED_BUFFER, (short) var10, BUFFER_FOR_NUMBERS, (short) 13, (short) ((short) var15 + 1));
+                        Util.arrayCopy(EXTENDED_BUFFER, offset, BUFFER_FOR_NUMBERS, (short) 13, (short) ((short) var15 + 1));
                         var16 = SIMSystem.getTheSIMView();
                         var16.select(SIMView.FID_MF);
                         var16.select(SIMView.FID_DF_GSM);
                         var16.select(DF_CELLTICK);
                         var16.select(EF_APP_MESSAGES);
-                        var16.updateBinary((short) 2, EXTENDED_BUFFER, (short) var10, (short) ((short) var15 + 1));
+                        var16.updateBinary((short) 2, EXTENDED_BUFFER, offset, (short) ((short) var15 + 1));
                     }
                     
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 14:
-                    if (Util.arrayCompare(BUFFER_FOR_NUMBERS, (short) 27, EXTENDED_BUFFER, (short) var10, BUFFER_FOR_NUMBERS[26]) != 0) {
-                        return (byte) 6;
+                    if (Util.arrayCompare(BUFFER_FOR_NUMBERS, (short) 27, EXTENDED_BUFFER, offset, BUFFER_FOR_NUMBERS[26]) != 0) {
+                        return 6;
                     }
                     
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 case 15:
                     // update ON SIM second short number on 31 index
-                    var15 = (short) EXTENDED_BUFFER[(short) var10];
+                    var15 = (short) EXTENDED_BUFFER[offset];
                     if ((short) var15 > 1 && (short) var15 < 11) {
-                        Util.arrayCopy(EXTENDED_BUFFER, (short) var10, BUFFER_FOR_NUMBERS, (short) 26, (short) ((short) var15 + 1));
+                        Util.arrayCopy(EXTENDED_BUFFER, offset, BUFFER_FOR_NUMBERS, (short) 26, (short) ((short) var15 + 1));
                         var16 = SIMSystem.getTheSIMView();
                         var16.select(SIMView.FID_MF);
                         var16.select(SIMView.FID_DF_GSM);
                         var16.select(DF_CELLTICK);
                         var16.select(EF_APP_MESSAGES);
-                        var16.updateBinary((short) 31, EXTENDED_BUFFER, (short) var10, (short) ((short) var15 + 1));
+                        var16.updateBinary((short) 31, EXTENDED_BUFFER, offset, (short) ((short) var15 + 1));
                     }
                     
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
                     break;
                 default:
-                    var10 = (short) ((short) ((short) var10 + (short) var14));
+                    offset = (short) (offset + nextBufferValue);
             }
         }
         
-        if ((short) ((short) var2 & 12) != 12 && ((short) ((short) var2 & 12) != 4 || (short) var11 == 0)) {
-            if ((short) ((short) var2 & 12) == 0) {
+        // 0x0C = 12
+        if ((headerSecondByte & 0x0C) != 0x0C && ((headerSecondByte & 0x0C) != 0x04 || (short) var11 == 0)) {
+            if ((headerSecondByte & 0x0C) == 0) {
                 sfield_token255_descoff310_staticref64 = 2;
                 sfield_token255_descoff135_staticref33 = false;
                 this.workWithICBchannel(false);
-                return (byte) 4;
+                return 4;
             }
             
-            if ((short) ((short) var2 & 12) == 8) {
+            if ((headerSecondByte & 0x0C) == 0x08) {
                 if (!sfield_token255_descoff177_staticref40) {
                     sfield_token255_descoff317_staticref65 = 3;
                 } else {
@@ -1314,9 +1291,9 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                 
                 sfield_token255_descoff135_staticref33 = false;
                 this.workWithICBchannel(false);
-                return (byte) 5;
+                return 5;
             }
-        } else if (sfield_token255_descoff177_staticref40 && (sfield_token255_descoff310_staticref64 != 3 || (short) ((short) var2 & 2) != 0)) {
+        } else if (sfield_token255_descoff177_staticref40 && (sfield_token255_descoff310_staticref64 != 3 || (headerSecondByte & 0x02) != 0)) {
             sfield_token255_descoff310_staticref64 = 1;
             this.workWithICBchannel(true);
             if ((short) var11 != 0) {
@@ -1328,23 +1305,23 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
             }
         }
         
-        return (byte) 0;
+        return 0;
     }
     
-    private byte method_token255_descoff1409(byte[] var1, short var2) {
-        short var3 = (short) 0;
-        short var10001 = (short) var2;
-        var2 = (short) ((short) ((short) var2 + 1));
-        short var4 = (short) var1[var10001];
+    // method_token255_descoff1409
+    /* вызывается только с одного места, с processSmsPPDataMessage */
+    private byte doCommandFromBuffer(byte[] buffer, short index) {
+        byte result = 0;
+        short value = buffer[index++];
         flowState = READY;
-        switch ((short) var4) {
-            case -128:
-                var3 = (short) 1;
+        switch (value) {
+            case 0x80: // -128
+                result = 1;
                 break;
-            case 0:
-            case 48:
+            case 0x00:
+            case 0x30: // 48
                 this.userDataMessageReference = -1;
-                if ((short) var4 == 0 && sfield_token255_descoff163_staticref38 != 1 && sfield_token255_descoff163_staticref38 != 4) {
+                if (value == 0 && sfield_token255_descoff163_staticref38 != 1 && sfield_token255_descoff163_staticref38 != 4) {
                     sfield_token255_descoff128_staticref32 = 3;
                 } else {
                     sfield_token255_descoff128_staticref32 = 1;
@@ -1353,34 +1330,34 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                 flowState = SMS_SENDED;
                 sfield_token255_descoff135_staticref33 = true;
                 sfield_token255_descoff142_staticref34 = sfield_token255_descoff303_staticref63;
-                this.processBufferAndSendSMS(var1, (short) var2, DCS_8_BIT_DATA, (byte) 0);
+                this.processBufferAndSendSMS(buffer, index, DCS_8_BIT_DATA, (byte) 0);
                 break;
-            case 2:
-            case 3:
-                this.sendUssd(var1, (short) var2);
+            case 0x02:
+            case 0x03:
+                this.sendUssd(buffer, index);
                 break;
-            case 16:
-                this.method_token255_descoff953(var1, (short) var2);
+            case 0x10: // 16
+                this.method_token255_descoff953(buffer, index);
                 break;
-            case 32:
+            case 0x20: // 32
                 sfield_token255_descoff135_staticref33 = true;
                 sfield_token255_descoff142_staticref34 = sfield_token255_descoff303_staticref63;
                 sfield_token255_descoff128_staticref32 = 3;
-                this.processBufferAndSendSMS(var1, (short) var2, DCS_DEFAULT_ALPHABET, (byte) 0);
+                this.processBufferAndSendSMS(buffer, index, DCS_DEFAULT_ALPHABET, (byte) 0);
                 break;
-            case 64:
+            case 0x40: // 64
                 boolean var5 = this.method_token255_descoff1517(sfield_token255_descoff121_staticref30, this.shortBuffer[0], this.shortBuffer[4], true);
                 if (var5) {
                     this.readAndDisplayText(PROMPT_INDEX_MESSAGE_SAVED);
                 }
                 break;
-            case 80:
+            case 0x50: // 80
                 boolean var6 = this.getInput(EXTENDED_BUFFER, (short) 552);
                 if (var6) {
-                    this.composeAndSendSMS(var1, (short) var2, EXTENDED_BUFFER, (short) 552);
+                    this.composeAndSendSMS(buffer, index, EXTENDED_BUFFER, (short) 552);
                 }
                 break;
-            case 96:
+            case 0x60: // 96
                 this.userDataMessageReference = -1;
                 sfield_token255_descoff128_staticref32 = 0;
                 byte textLength = (byte) 127;
@@ -1389,11 +1366,11 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     flowState = SMS_SENDED;
                     sfield_token255_descoff135_staticref33 = true;
                     sfield_token255_descoff142_staticref34 = sfield_token255_descoff303_staticref63;
-                    this.composeAndSendSMS(var1, (short) var2, EXTENDED_BUFFER, (short) 552);
+                    this.composeAndSendSMS(buffer, index, EXTENDED_BUFFER, (short) 552);
                 }
         }
         
-        return (byte) ((short) var3);
+        return result;
     }
     
     // method_token255_descoff1085
@@ -1532,7 +1509,9 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         sv.readBinary(offsetBaseItem, this.byteBuffer, (short) 0, (short) 1);
         
         short len = Util.makeShort((byte) 0, this.byteBuffer[0]);
-        sv.readBinary(offsetBaseItem, buffer, bufferOffset, len++);
+        len++;
+        sv.readBinary(offsetBaseItem, buffer, bufferOffset, len);
+        len++;
         return len;
     }
     
@@ -1873,17 +1852,13 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         // eventMenuSelection: var2 = 3; var3 = true; - MENU_SELECTION
         
         short var6 = (short) 1;
-        short var7 = (short) 0;
+        boolean flag = false;
         
         for (byte i = 0; i < cycleLimit; i++) {
-            byte var5 = this.function_DO_1(this.shortBuffer[0]);
+            byte result = this.function_DO_1(this.shortBuffer[0]);
             
             if (this.field_token28_descoff870) {
                 var3 = true;
-            }
-            
-            if (this.field_token24_descoff842) {
-                cycleLimit++;
             }
             
             if (source != SMS_PP && source != MENU_SELECTION) {
@@ -1892,7 +1867,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                 var6 = (short) -1; // SMS or MENU
             }
             
-            if (var5 == 16) {
+            if (result == 0x10) { // 0x10 = 16
                 if (this.field_token25_descoff849 != 2 && this.field_token25_descoff849 != 4) {
                     this.shortBuffer[5] = (short) (this.shortBuffer[0] + this.shortBuffer[3]);
                 } else {
@@ -1909,35 +1884,37 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     this.playTone();
                 }
                 
-                this.processShowMessageAndParseResult(this.field_token25_descoff849 != 0, (byte) ((short) var6), this.shortBuffer[5], var3, source == SMS_PP);
+                this.processShowMessageAndParseResult(this.field_token25_descoff849 != 0, (byte) var6, this.shortBuffer[5], var3, source == SMS_PP);
             } else {
-                var5 = 18;
+                result = 0x12; // 0x12 = 18
                 this.parsedMsgBufferOffset = -6;
             }
             
             if (this.parsedMsgBufferOffset >= 0) {
-                var5 = this.method_token255_descoff1409(PARSED_MESSAGE, this.parsedMsgBufferOffset);
+                result = this.doCommandFromBuffer(PARSED_MESSAGE, this.parsedMsgBufferOffset);
             }
             
-            if (this.field_token24_descoff842) {
+            if (this.moreCycles) {
+                cycleLimit++;
                 this.shortBuffer[0] += this.shortBuffer[4];
             } else {
                 this.shortBuffer[0] += this.shortBuffer[4];
-                if ((short) (this.shortBuffer[0] % 79) != 0) {
-                    this.shortBuffer[0] += (short) (79 - (short) (this.shortBuffer[0] % 79));
+                
+                if ((this.shortBuffer[0] % 79) != 0) {
+                    this.shortBuffer[0] += (short) (79 - (this.shortBuffer[0] % 79));
                 }
             }
             
             if (this.parsedMsgBufferOffset == -7) {
-                if (!this.field_token24_descoff842) {
+                if (!this.moreCycles) {
                     this.resetVars();
                     return;
                 }
                 
-                var7 = (short) 1;
+                flag = true;
             }
             
-            if ((short) var7 != 0 && !this.field_token24_descoff842) {
+            if (flag && !this.moreCycles) {
                 this.resetVars();
                 return;
             }
@@ -1950,55 +1927,56 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     /* вызывается только с одного места, с processDataMessage */
     private byte function_DO_1(short bufferOffset) {
         // cycle 1: bufferOffset = 0;
-        short var2 = (short) 0;
         byte[] tmpHeaderBuffer = { 0, 0, 0 };
         
         Util.arrayCopy(EXTENDED_BUFFER, bufferOffset, tmpHeaderBuffer, (short) 0, (short) 3);
         this.shortBuffer[3] = (short) (tmpHeaderBuffer[0] & 0xFF);
         this.shortBuffer[3]++;
         
-        this.field_token24_descoff842 = (short) (tmpHeaderBuffer[1] & 1) != 0;
+        // true - if low byte is нечетный (1,3,5,7,9)
+        this.moreCycles = (tmpHeaderBuffer[1] & 1) != 0;
         
         // -64 = 1100:0000
         // в tmpHeaderBuffer[1] старший бит должен быть 1,2 или 3 (0x32)
         // если биты 6 и 7 установлены, то выходим
-        if ((short) (tmpHeaderBuffer[1] & -64) != 0) {
+        if ((tmpHeaderBuffer[1] & -64) != 0) {
             return -1;
         } else {
-            byte valueFirstByte = 0;
-            byte valueSecondByte = 0;
-            short valueThirdByte = 0;
+            byte bufferFirstValue = 0;
+            byte bufferSecondValue = 0;
+            short bufferThirdValue = 0;
             
             // 48 = 0x30
+            // 32 = 0x20
             // 16 = 0x10
-            switch ((short) (tmpHeaderBuffer[1] & 48)) {
-                case 16:
-                case 48:
-                    valueFirstByte = EXTENDED_BUFFER[bufferOffset + this.shortBuffer[3]];
+            switch ((tmpHeaderBuffer[1] & 0x30)) {
+                case 0x10:
+                case 0x30:
+                    bufferFirstValue = EXTENDED_BUFFER[bufferOffset + this.shortBuffer[3]];
                     this.shortBuffer[4] = (short) (bufferOffset + this.shortBuffer[3] + 1);
                     
-                    for (byte i = 0; i < valueFirstByte; i++) {
+                    for (byte i = 0; i < bufferFirstValue; i++) {
                         
-                        valueSecondByte = EXTENDED_BUFFER[this.shortBuffer[4]];
-                        valueThirdByte = (short) (EXTENDED_BUFFER[this.shortBuffer[4] + valueSecondByte] & 255);
+                        bufferSecondValue = EXTENDED_BUFFER[this.shortBuffer[4]];
+                        bufferThirdValue = (short) (EXTENDED_BUFFER[this.shortBuffer[4] + bufferSecondValue] & 0xFF);
                         
                         this.shortBuffer[4]++;
                         
-                        this.shortBuffer[4] = (short) (this.shortBuffer[4] + valueSecondByte + valueThirdByte);
+                        this.shortBuffer[4] = (short) (this.shortBuffer[4] + bufferSecondValue + bufferThirdValue);
                     }
                     
                     this.shortBuffer[4] -= bufferOffset;
-                    if (this.function_DO_1_1(bufferOffset, (tmpHeaderBuffer[1] & 48) == 48, tmpHeaderBuffer[1], tmpHeaderBuffer[2])) {
-                        return 16; // 0x10, 0001:0000
+                    if (this.function_DO_1_1(bufferOffset, (tmpHeaderBuffer[1] & 0x30) == 0x30, tmpHeaderBuffer[1], tmpHeaderBuffer[2])) {
+                        return 0x10; // 0x10, 0001:0000
                     }
                     break;
-                case 32:
+                case 0x20:
                     if (!this.isAddressInSmsTpduExist) {
                         return -2; // 0xFE, 1111:1110
                     }
                     
                     this.shortBuffer[4] = this.shortBuffer[3];
-                    var2 = (short) this.method_token255_descoff1229(bufferOffset, tmpHeaderBuffer[1], tmpHeaderBuffer[2]);
+                    byte var2 = this.processEachPartsOfMessage(bufferOffset, tmpHeaderBuffer[1], tmpHeaderBuffer[2]);
                     if (var2 == 0) {
                         return 32; // 0x20, 0010:0000
                     }
@@ -2012,77 +1990,101 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         }
     }
     
+    private byte method_token255_descoff1049(byte value) {
+        short var3 = sfield_token255_descoff212_staticref45;
+        if (value == 0) {
+            return 1;
+        } else {
+            for (byte i = 0; i < var3; i++) {
+                if (sfield_token255_descoff44_staticref8[i * 2] == value) {
+                    if (sfield_token255_descoff44_staticref8[i * 2 + 1] == 1) {
+                        return 1;
+                    }
+                    return 0;
+                }
+            }
+            return 2;
+        }
+    }
+    
     // method_token255_descoff12411
     /* вызывается только с одного места, с function_DO_1 */
     private boolean function_DO_1_1(short bufferOffset, boolean var2, byte headerSecondByte, byte headerThirdByte) {
-        short var6 = (short) 0;
-        short var8 = (short) 0;
+        short var6 = 0;
+        short var8 = 0;
         
-        short var10 = (short) 0;
-        short var11 = (short) 0;
-        short var12 = (short) 0;
-        short var13 = (short) 1;
-        short var14 = (short) 1;
-        short var15 = (short) 0;
-        short var16 = (short) 1;
-        short var19 = (short) 0;
+        short var11 = 0;
+        short var12 = 0;
+        short var13 = 1;
+        short var14 = 1;
+        short var15 = 0;
+        short var16 = 1;
+        short var19 = 0;
         this.field_token31_descoff891 = false;
+        // 0x06 - check bit 1 and 2
         this.field_token25_descoff849 = (byte) (headerSecondByte & 0x06); // 0x32 & 0x06 = 0x02
-        byte thirdByteLowValue = (byte) (headerThirdByte & 0x0F); // 0x16 & 0x0F = 0x6
+        byte thirdByteLowValue = (byte) (headerThirdByte & 0x0F); // 0x14 & 0x0F = 0x4
+        
+        short parsedOffset = 0;
+        short offset = (short) (bufferOffset + 1 + 2); // offset = 3
+        
         PARSED_MESSAGE[31] = 0;
         
-        // offset = 3
-        short offset = (short) (bufferOffset + 1 + 2);
-        
         if (var2) {
-            // offset 3 = 0x00
+            // EX[3] = 0x00
             if (this.method_token255_descoff1049(EXTENDED_BUFFER[offset++]) == 0) {
                 return false;
             }
+            // offset 4
         }
         
         if (this.field_token25_descoff849 == 2) {
             // 0x7F80 = 32640
-            // offset 4 = 0x08 << 7 = 0x0400 & 0x7F80 = 0x0400
+            // EX[4] = 0x08 << 7 = 0x0400 & 0x7F80 = 0x0400
             this.field_token26_descoff856 = (short) ((EXTENDED_BUFFER[offset++] << 7) & 0x7F80);
+            // offset 5
             
         } else if (this.field_token25_descoff849 == 4) {
             this.field_token26_descoff856 = Util.getShort(EXTENDED_BUFFER, offset);
             offset = (short) (offset + 2);
         }
         
-        if ((headerThirdByte & 0x80) != 0) {// 0x80 = -128 (0x16 & 0x80 = 0)
+        if ((headerThirdByte & 0x80) != 0) {// 0x80 = -128 (0x14 & 0x80 = 0)
             this.field_token27_descoff863 = true;
         } else {
             this.field_token27_descoff863 = false;
         }
         
-        if ((headerThirdByte & 0x40) != 0) {// 0x40 = 64 (0x16 & 0x40 = 0)
+        if ((headerThirdByte & 0x40) != 0) {// 0x40 = 64 (0x14 & 0x40 = 0)
             this.field_token28_descoff870 = true;
         } else {
             this.field_token28_descoff870 = false;
         }
         
-        if ((headerThirdByte & 0x20) != 0) {// 0x20 = 32 (0x16 & 0x20 = 0)
+        if ((headerThirdByte & 0x20) != 0) {// 0x20 = 32 (0x14 & 0x20 = 0)
             if ((EXTENDED_BUFFER[offset] & sfield_token255_descoff170_staticref39) == 0 && EXTENDED_BUFFER[offset] != 0) {
                 return false;
             }
             offset++;
         }
         
-        if ((headerThirdByte & 0x10) != 0) {// 0x10 = 16 (0x16 & 0x10 = 0x10)
-            // offset 5 = 0x90
+        // !!!!!!!!!!!!!!!! return FALSE получается (сначало надо выставить sfield_token255_descoff205_staticref44 какое нить значение, возможно
+        // предварительно по смс)
+        if ((headerThirdByte & 0x10) != 0) {// 0x10 = 16 (0x14 & 0x10 = 0x10)
+            // offset 5 = 0x48
             if ((EXTENDED_BUFFER[offset] & sfield_token255_descoff205_staticref44) == 0 && EXTENDED_BUFFER[offset] != 0) {
                 return false;
             }
             offset++;
+            // offset 6
         }
         
         byte shortNumberLen = 0;
         
-        if (thirdByteLowValue > 0) {
-            // offset 6 = 0x03
+        if (thirdByteLowValue > 0) { // 4
+            // offset 6 = 0x00
             this.shortNumber1LenGlobal = EXTENDED_BUFFER[offset++];
+            // offset 7
             if (this.shortNumber1LenGlobal > 0) {
                 shortNumberLen = this.shortNumber1LenGlobal;
                 if (this.shortNumber1LenGlobal > 11) {
@@ -2093,8 +2095,9 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                 offset = (short) (offset + shortNumberLen);
             }
             
-            // offset 10 = 0x00
+            // offset 7 = 0x00
             this.shortNumber2LenGlobal = EXTENDED_BUFFER[offset++];
+            // offset 8
             if (this.shortNumber2LenGlobal > 0) {
                 shortNumberLen = this.shortNumber2LenGlobal;
                 if (this.shortNumber2LenGlobal > 20) {
@@ -2104,7 +2107,6 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                 Util.arrayCopy(EXTENDED_BUFFER, offset, PARSED_MESSAGE, (short) 11, this.shortNumber2LenGlobal);
                 offset = (short) (offset + shortNumberLen);
             }
-            // offset 11 = 0xF0
         }
         
         SIMView sv = SIMSystem.getTheSIMView();
@@ -2117,13 +2119,15 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
             
             short offsetBaseItem = this.findBaseItemsOffset(TAG_BASE_ITEM_NEXT);
             if (offsetBaseItem != -1) {
-                var10 = (short) (var10 + this.readSimMessageValueToBuffer(offsetBaseItem, PARSED_MESSAGE, (short) (32 + var10), true));
-                short savedOffset = var10;
+                // TAG_BASE_ITEM_NEXT = len 20, return len+1 = 21
+                parsedOffset = (short) (parsedOffset + this.readSimMessageValueToBuffer(offsetBaseItem, PARSED_MESSAGE, (short) (32 + parsedOffset), true));
+                short savedParsedOffset = parsedOffset; // = 21
                 
-                var10++;
-                PARSED_MESSAGE[32 + var10] = (byte) 0x80; // 0x80 = -128;
-                var10++;
-                PARSED_MESSAGE[32 + savedOffset] = (byte) (var10 - savedOffset - 1);
+                parsedOffset++;
+                // parsedOffset = 22
+                PARSED_MESSAGE[32 + parsedOffset] = (byte) 0x80; // 0x80 = -128;
+                parsedOffset++;
+                PARSED_MESSAGE[32 + savedParsedOffset] = (byte) (parsedOffset - savedParsedOffset - 1); // (22 - 21 - 1) = 0
                 PARSED_MESSAGE[31]++;
             }
         }
@@ -2133,6 +2137,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         boolean var17 = false;
         
         for (byte counter = 0; counter < thirdByteLowValue && counter < limit; counter++) {
+            //offset 8 = 0xF0
             short nextByte = EXTENDED_BUFFER[offset];
             var9 = 0;
             var16 = 1;
@@ -2215,7 +2220,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                         }
                         
                         if (var11 != -1) {
-                            var10 = (short) (var10 + this.readSimMessageValueToBuffer(var11, PARSED_MESSAGE, (short) (32 + var10), true));
+                            parsedOffset = (short) (parsedOffset + this.readSimMessageValueToBuffer(var11, PARSED_MESSAGE, (short) (32 + parsedOffset), true));
                         } else {
                             var13 = 0;
                             PARSED_MESSAGE[31]--;
@@ -2249,27 +2254,27 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     if (this.field_token25_descoff849 != 2 && this.field_token25_descoff849 != 4) {
                         if (var14 != 0) {
                             if (var25 != 0) {
-                                PARSED_MESSAGE[32 + var10] = (byte) (var8 + 1);
-                                PARSED_MESSAGE[32 + var10 + 1] = (byte) var24;
-                                var10 = (short) (var10 + 2);
+                                PARSED_MESSAGE[32 + parsedOffset] = (byte) (var8 + 1);
+                                PARSED_MESSAGE[32 + parsedOffset + 1] = (byte) var24;
+                                parsedOffset = (short) (parsedOffset + 2);
                             } else {
-                                PARSED_MESSAGE[32 + var10] = (byte) ((short) var8);
-                                var10++;
+                                PARSED_MESSAGE[32 + parsedOffset] = (byte) ((short) var8);
+                                parsedOffset++;
                             }
                             
-                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + var9 + 1), PARSED_MESSAGE, (short) (32 + var10), var8);
+                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + var9 + 1), PARSED_MESSAGE, (short) (32 + parsedOffset), var8);
                             if (var15 == 0) {
                                 var9 = (short) (var9 + var12);
                             }
                             
-                            var10 = (short) (var10 + var8);
+                            parsedOffset = (short) (parsedOffset + var8);
                         }
                     } else {
                         if (var14 != 0) {
-                            var8 = this.method_token255_descoff977(EXTENDED_BUFFER, (short) (offset + var9), PARSED_MESSAGE, (short) (32 + var10 + 2));
-                            PARSED_MESSAGE[32 + var10] = (byte) ((var8 > 40 ? 40 : var8) + 1);
-                            PARSED_MESSAGE[32 + var10 + 1] = (byte) var24;
-                            var10 = (short) (var10 + PARSED_MESSAGE[32 + var10] + 1);
+                            var8 = this.method_token255_descoff977(EXTENDED_BUFFER, (short) (offset + var9), PARSED_MESSAGE, (short) (32 + parsedOffset + 2));
+                            PARSED_MESSAGE[32 + parsedOffset] = (byte) ((var8 > 40 ? 40 : var8) + 1);
+                            PARSED_MESSAGE[32 + parsedOffset + 1] = (byte) var24;
+                            parsedOffset = (short) (parsedOffset + PARSED_MESSAGE[32 + parsedOffset] + 1);
                         }
                         
                         if (var15 == 0) {
@@ -2283,10 +2288,10 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                 }
                 
                 if (var13 != 0) {
-                    var11 = var10;
-                    var10++;
-                    PARSED_MESSAGE[32 + var10] = (byte) var6;
-                    var10++;
+                    var11 = parsedOffset;
+                    parsedOffset++;
+                    PARSED_MESSAGE[32 + parsedOffset] = (byte) var6;
+                    parsedOffset++;
                 }
                 
                 var8 = (short) (nextByte & 15);
@@ -2298,7 +2303,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                 if (var6 == 16 || var6 == 0 || var6 == 48 || var6 == 32 || var6 == 96 || var6 == 80) {
                     if (var13 != 0) {
                         if (var8 > 0) {
-                            PARSED_MESSAGE[32 + var10] = (byte) (var8 + 1);
+                            PARSED_MESSAGE[32 + parsedOffset] = (byte) (var8 + 1);
                             if (var6 != 16) {
                                 var24 = (short) ((var8 - 1) * 2);
                                 if ((EXTENDED_BUFFER[offset + 1 + var8 - 1] & -16) == -16) {
@@ -2308,13 +2313,13 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                                 var24 = var8;
                             }
                             
-                            var10++;
-                            PARSED_MESSAGE[32 + var10] = (byte) var24;
-                            var10++;
-                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) (32 + var10), var8);
-                            var10 = (short) (var10 + var8);
+                            parsedOffset++;
+                            PARSED_MESSAGE[32 + parsedOffset] = (byte) var24;
+                            parsedOffset++;
+                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) (32 + parsedOffset), var8);
+                            parsedOffset = (short) (parsedOffset + var8);
                         } else {
-                            PARSED_MESSAGE[32 + var10] = (byte) (this.shortNumber1LenGlobal + 1);
+                            PARSED_MESSAGE[32 + parsedOffset] = (byte) (this.shortNumber1LenGlobal + 1);
                             if (var6 != 16) {
                                 var24 = (short) ((this.shortNumber1LenGlobal - 1) * 2);
                                 if ((PARSED_MESSAGE[this.shortNumber1LenGlobal - 1] & 0xF0) == 0xF0) { // 0xF0 = -16
@@ -2324,11 +2329,11 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                                 var24 = this.shortNumber1LenGlobal;
                             }
                             
-                            var10++;
-                            PARSED_MESSAGE[32 + var10] = (byte) var24;
-                            var10++;
-                            Util.arrayCopy(PARSED_MESSAGE, (short) 0, PARSED_MESSAGE, (short) (32 + var10), this.shortNumber1LenGlobal);
-                            var10 = (short) (var10 + this.shortNumber1LenGlobal);
+                            parsedOffset++;
+                            PARSED_MESSAGE[32 + parsedOffset] = (byte) var24;
+                            parsedOffset++;
+                            Util.arrayCopy(PARSED_MESSAGE, (short) 0, PARSED_MESSAGE, (short) (32 + parsedOffset), this.shortNumber1LenGlobal);
+                            parsedOffset = (short) (parsedOffset + this.shortNumber1LenGlobal);
                         }
                     }
                     
@@ -2345,60 +2350,60 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     
                     if (var13 != 0) {
                         if (var8 > 0) {
-                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) (32 + var10 + 1), var8);
+                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) (32 + parsedOffset + 1), var8);
                         } else {
                             var8 = this.shortNumber2LenGlobal;
-                            Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) (32 + var10 + 1), var8);
+                            Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) (32 + parsedOffset + 1), var8);
                         }
                         
                         if ((var24 & 0x80) != 0) { // -128 = 0x80
-                            PARSED_MESSAGE[32 + var10 + var8 + 1] = 32;
-                            PARSED_MESSAGE[32 + var10 + var8 + 2] = (byte) (counter + 1 + 48);
+                            PARSED_MESSAGE[32 + parsedOffset + var8 + 1] = 32;
+                            PARSED_MESSAGE[32 + parsedOffset + var8 + 2] = (byte) (counter + 1 + 48);
                             var8 = (short) (var8 + 2);
                         }
                         
                         if (var6 == 0) {
-                            PARSED_MESSAGE[32 + var10 + var8 + 1] = 32;
-                            PARSED_MESSAGE[32 + var10 + var8 + 2] = (byte) (sfield_token255_descoff163_staticref38 + 48);
+                            PARSED_MESSAGE[32 + parsedOffset + var8 + 1] = 32;
+                            PARSED_MESSAGE[32 + parsedOffset + var8 + 2] = (byte) (sfield_token255_descoff163_staticref38 + 48);
                             var8 = (short) (var8 + 2);
                         }
                         
-                        PARSED_MESSAGE[32 + var10] = (byte) var8;
-                        var10 = (short) (var10 + var8 + 1);
+                        PARSED_MESSAGE[32 + parsedOffset] = (byte) var8;
+                        parsedOffset = (short) (parsedOffset + var8 + 1);
                     }
                     
                     offset = (short) (offset + shortNumberLen + 1);
                 }
                 
-                if ((short) var6 == 2 || (short) var6 == 3) {
-                    var8 = (short) EXTENDED_BUFFER[offset + 1 + 2];
+                if (var6 == 2 || var6 == 3) {
+                    var8 = EXTENDED_BUFFER[offset + 1 + 2];
                     shortNumberLen = (byte) var8;
-                    if ((short) var8 > 20) {
-                        var8 = (short) 20;
+                    if (var8 > 20) {
+                        var8 = 20;
                     }
                     
-                    if ((short) var13 != 0) {
-                        if ((short) var8 > 0) {
-                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1 + 3), PARSED_MESSAGE, (short) ((short) (32 + (short) var10) + 1), (short) var8);
+                    if (var13 != 0) {
+                        if (var8 > 0) {
+                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1 + 3), PARSED_MESSAGE, (short) (32 + parsedOffset + 1), var8);
                         } else {
                             var8 = this.shortNumber2LenGlobal;
-                            Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) ((short) (32 + (short) var10) + 1), (short) var8);
+                            Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) (32 + parsedOffset + 1), var8);
                         }
                         
-                        PARSED_MESSAGE[(short) (32 + (short) var10)] = (byte) ((short) var8);
-                        var10 = (short) ((short) ((short) var10 + (byte) ((short) ((short) var8 + 1))));
+                        PARSED_MESSAGE[32 + parsedOffset] = (byte) var8;
+                        parsedOffset = (short) (parsedOffset + var8 + 1);
                     }
                 }
                 
                 if (var15 != 0) {
                     offset = (short) (offset + EXTENDED_BUFFER[offset + 1] + 1 + 1);
-                    if ((short) var19 == 1) {
+                    if (var19 == 1) {
                         offset = (short) (offset + EXTENDED_BUFFER[offset + 1] + 1 + 1);
                         limit++;
                         counter++;
                     }
                 } else {
-                    if ((short) var6 == 64) {
+                    if (var6 == 64) {
                         offset++;
                     }
                     
@@ -2409,8 +2414,8 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     }
                 }
                 
-                if ((short) var13 != 0) {
-                    PARSED_MESSAGE[(short) (32 + (short) var11)] = (byte) ((short) ((short) ((short) var10 - (short) var11) - 1));
+                if (var13 != 0) {
+                    PARSED_MESSAGE[32 + var11] = (byte) (parsedOffset - var11 - 1);
                 }
             }
         }
@@ -2418,7 +2423,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         if (flowState != READY || this.field_token28_descoff870) {
             short itemOffset = this.findBaseItemsOffset(TAG_BASE_ITEM_MAIN);
             if (itemOffset != -1) {
-                short parsedOffset = (short) (var10 + this.readSimMessageValueToBuffer(itemOffset, PARSED_MESSAGE, (short) (32 + var10), true));
+                parsedOffset = (short) (parsedOffset + this.readSimMessageValueToBuffer(itemOffset, PARSED_MESSAGE, (short) (32 + parsedOffset), true));
                 short savedParsedOffset = parsedOffset;
                 
                 parsedOffset++;

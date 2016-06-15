@@ -1,3 +1,11 @@
+    // private static boolean sfield_token255_descoff219_staticref46;
+    // private byte field_token32_descoff898 = 0;
+    // private static short sfield_token255_descoff261_staticref54;
+    // private static boolean sfield_token255_descoff296_staticref62 = true;
+    // private short field_token23_descoff835 = -6;
+    // private static boolean sfield_token255_descoff289_staticref61 = true;
+    // private static boolean sfield_token255_descoff240_staticref49;
+    
 //    private static byte         sfield_token255_descoff443_staticref86  = 11;
 //    private static byte         sfield_token255_descoff492_staticref93  = 18;
 //    private static byte         sfield_token255_descoff604_staticref109 = 34;
