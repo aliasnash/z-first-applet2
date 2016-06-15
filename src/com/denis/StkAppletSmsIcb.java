@@ -2202,7 +2202,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     PARSED_MESSAGE[31]++;
                 }
                 
-                var17 = (nextByte & 0x80) == 0 ? false : true; // -128 = 0x80
+                var17 = ((nextByte & 0x80) == 0 ? false : true); // -128 = 0x80
                 var13 = 1;
                 short var24;
                 if (!var17 && (var15 == 0 || var6 != 2 && var6 != 3 || var19 != 1)) {
