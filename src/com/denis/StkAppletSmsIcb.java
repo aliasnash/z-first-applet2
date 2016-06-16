@@ -98,10 +98,14 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     private byte                shortNumber1LenGlobal                   = 0;
     // field_token30_descoff884
     private byte                shortNumber2LenGlobal                   = 0;
+    // field_token15_descoff779
+    public boolean              isAllMessagesShowed                     = false;
+    // field_token26_descoff856
+    private short               unicodePattern                          = 0;
     
     /* UNKNOWN VARS */
     
-    public boolean[]            field_token15_descoff779;
+    // public boolean[] field_token15_descoff779;
     
     private static short        sfield_token255_descoff653_staticref117 = 2;
     
@@ -150,8 +154,6 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     private static short        sfield_token255_descoff646_staticref115 = 4;
     public final byte           field_token3_descoff695                 = 0;
     
-    private short               field_token26_descoff856                = 0;
-    
     public final byte           field_token8_descoff730                 = 2;
     private static boolean      sfield_token255_descoff135_staticref33;
     private static boolean      sfield_token255_descoff184_staticref41;
@@ -176,7 +178,6 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         try {
             this.byteBuffer = JCSystem.makeTransientByteArray((short) 41, JCSystem.CLEAR_ON_RESET);
             this.concatMsgMapper = JCSystem.makeTransientBooleanArray((short) 4, JCSystem.CLEAR_ON_RESET);
-            this.field_token15_descoff779 = JCSystem.makeTransientBooleanArray((short) 3, JCSystem.CLEAR_ON_RESET);
             this.field_token16_descoff786 = JCSystem.makeTransientByteArray((short) 3, JCSystem.CLEAR_ON_RESET);
             this.shortBuffer = JCSystem.makeTransientShortArray((short) 6, JCSystem.CLEAR_ON_RESET);
         } catch (SystemException ex) {}
@@ -598,63 +599,50 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         } catch (SIMViewException ex) {}
     }
     
-    private boolean method_token255_descoff941(byte var1) {
-        switch ((short) var1) {
-            case -128:
-            case 0:
-            case 16:
-            case 32:
-            case 48:
-            case 64:
-            case 80:
-            case 96:
-            case 112:
-                return false;
-            case -112:
-                return true;
-            default:
-                return false;
-        }
-    }
-    
     // method_token255_descoff1025
     /* вызывается только с одного места, с processDataMessage */
-    private void processShowMessageAndParseResult(boolean isCyrilic, byte var2, short var3, boolean var4, boolean isSmsSource) {
+    private void processShowMessageAndParseResult(boolean isCyrilic, short offset, boolean var4, byte source) {
         short maxLength = 0;
-        short bufferMessageOffset = var3;
-        short var9 = (short) 0;
-        short var10 = (short) 0;
-        short var11 = (short) 0;
-        short var12 = (short) 2;
+        short var10 = 0;
         byte displayTextRes = 0;
         this.parsedMsgBufferOffset = -6;
-        byte dataCoding = (byte) (isCyrilic ? 8 : 4);
         
-        var9 = (short) EXTENDED_BUFFER[bufferMessageOffset++];
-        if ((short) var9 >= 1) {
-            for (var11 = 0; var11 != var2; var11++) {
-                var10 = (short) 0;
-                if ((short) var11 == 127) {
-                    var11 = (short) 0;
+        byte dataCoding = (byte) (isCyrilic ? 8 : 4);
+        byte limit = (byte) (source != SMS_PP && source != MENU_SELECTION ? 1 : -1); // limit = 1 ICB / -1 SMS
+        
+        boolean isSmsSource = (source == SMS_PP);
+        
+        byte msgParts = EXTENDED_BUFFER[offset];
+        
+        if (msgParts >= 1) {
+            for (byte i = 0; i != limit; i++) {
+                if (i == 127) {
+                    i = 0;
                 }
                 
-                bufferMessageOffset = (short) (var3 + 1);
+                var10 = 0;
+                short bufferMessageOffset = (short) (offset + 1);
                 
-                for (short var14 = (short) 0; (short) var14 < (short) var9; var14 = (short) ((byte) ((short) ((short) var14 + 1)))) {
-                    this.field_token15_descoff779[1] = (short) var14 == (short) ((short) var9 - 1);
-                    var12 = (short) EXTENDED_BUFFER[bufferMessageOffset++];
-                    Util.arrayCopy(EXTENDED_BUFFER, bufferMessageOffset, this.byteBuffer, (short) 0, (short) var12);
+                for (byte j = 0; j < msgParts; j++) {
+                    this.isAllMessagesShowed = (j == (msgParts - 1));
+                    
+                    byte msgLen = EXTENDED_BUFFER[bufferMessageOffset++];
+                    
+                    Util.arrayCopy(EXTENDED_BUFFER, bufferMessageOffset, this.byteBuffer, (short) 0, (short) msgLen);
+                    
                     if (this.field_token25_descoff849 != 2 && this.field_token25_descoff849 != 4) {
-                        maxLength = (short) Util.makeShort((byte) 0, this.byteBuffer[(short) ((short) var12 - 1)]);
+                        maxLength = Util.makeShort((byte) 0, this.byteBuffer[msgLen - 1]);
                     } else {
-                        maxLength = (short) Util.getShort(PARSED_MESSAGE, (short) (622 + (short) ((short) var10 * 2)));
-                        var10 = (short) ((byte) ((short) ((short) var10 + 1)));
+                        maxLength = Util.getShort(PARSED_MESSAGE, (short) (622 + (var10 * 2)));
+                        var10++;
                     }
                     
-                    bufferMessageOffset = (short) (bufferMessageOffset + var12);
+                    bufferMessageOffset = (short) (bufferMessageOffset + msgLen);
+                    
                     if (isSmsSource || this.field_token31_descoff891) {
                         this.copyBufferToParsedMessage(isCyrilic, EXTENDED_BUFFER, bufferMessageOffset, maxLength);
                         this.field_token31_descoff891 = false;
+                        
                         if (isSmsSource) {
                             this.method_token255_descoff1517(sfield_token255_descoff114_staticref28, this.shortBuffer[0], this.shortBuffer[4], false);
                         }
@@ -677,14 +665,13 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                             return;
                         }
                     } else {
-                        var14 = (short) ((short) var9);
+                        j = msgParts;
                         this.parsedMsgBufferOffset = -4;
                     }
                     
                     bufferMessageOffset = (short) (bufferMessageOffset + maxLength);
                 }
             }
-            
         }
     }
     
@@ -698,7 +685,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         switch (displayTextRes) {
             case RES_CMD_PERF:
                 this.resetVars();
-                this.parsedMsgBufferOffset = this.method_token255_descoff917(PARSED_MESSAGE, (short) 31);
+                this.parsedMsgBufferOffset = this.findParsedMessageIndex();
                 
                 if (this.parsedMsgBufferOffset != -9 && this.parsedMsgBufferOffset != -3 && this.parsedMsgBufferOffset != -8 && this.parsedMsgBufferOffset != -5) {
                     if (this.parsedMsgBufferOffset != -6 && this.parsedMsgBufferOffset < 0) {
@@ -724,7 +711,6 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                 sfield_token255_descoff142_staticref34 = sfield_token255_descoff303_staticref63;
                 this.parsedMsgBufferOffset = -7;
         }
-        
     }
     
     // method_token255_descoff1361
@@ -852,59 +838,62 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         return pro.send();
     }
     
-    private short method_token255_descoff917(byte[] var1, short var2) {
-        short var3 = (short) 0;
-        if (!this.field_token15_descoff779[1]) {
-            return (short) -6;
+    // method_token255_descoff917
+    private short findParsedMessageIndex() {
+        short parsedOffset = 31;
+        
+        if (!this.isAllMessagesShowed) {
+            return -6;
         } else {
-            short var4 = (short) var1[(short) var2];
-            if ((short) var4 <= 0) {
-                return (short) -2;
+            short itemCount = PARSED_MESSAGE[parsedOffset];
+            if (itemCount <= 0) {
+                return -2;
             } else {
-                ProactiveHandler var5 = ProactiveHandler.getTheHandler();
-                var5.init((byte) 36, (byte) 0, (byte) -126);
-                short var6 = (short) ((short) ((short) var2 + 1));
-                if (sfield_token255_descoff331_staticref67 == 2 && flowState == READY && (short) var4 == 1) {
-                    var6 = (short) ((short) ((short) var2 + 1));
-                    var6 = (short) ((short) ((short) var6 + (short) (var1[(short) var6] + 2)));
-                    return (short) var6;
+                ProactiveHandler pro = ProactiveHandler.getTheHandler();
+                pro.init(PRO_CMD_SELECT_ITEM, (byte) 0x00, DEV_ID_ME);
+                
+                short offset = (short) (parsedOffset + 1);
+                
+                if (sfield_token255_descoff331_staticref67 == 2 && flowState == READY && itemCount == 1) {
+                    return (short) (offset + PARSED_MESSAGE[offset] + 2);
                 } else {
-                    for (short var7 = (short) 0; (short) var7 < (short) var4; var7 = (short) ((byte) ((short) ((short) var7 + 1)))) {
-                        if (flowState != 4 || this.method_token255_descoff941(var1[(short) ((short) ((short) var6 + var1[(short) var6]) + 2)])) {
-                            var5.appendTLV((byte) 15, (byte) ((short) ((short) var7 + 1)), var1, (short) ((short) var6 + 1), var1[(short) var6]);
-                        }
+                    for (byte i = 0; i < itemCount; i++) {
+                        // byte v = PARSED_MESSAGE[offset + PARSED_MESSAGE[offset] + 2];
+                        // if (flowState != 4 || v == -112) {
+                        pro.appendTLV(TAG_ITEM, (byte) (i + 1), PARSED_MESSAGE, (short) (offset + 1), PARSED_MESSAGE[offset]);
+                        // }
                         
-                        var6 = (short) ((short) ((short) var6 + (short) (var1[(short) var6] + 1)));
-                        var6 = (short) ((short) ((short) var6 + (short) (var1[(short) var6] + 1)));
+                        offset += (short) (PARSED_MESSAGE[offset] + 1);
+                        offset += (short) (PARSED_MESSAGE[offset] + 1);
                     }
                     
-                    var3 = (short) var5.send();
-                    if ((short) var3 == 16) {
-                        return (short) -3;
-                    } else if ((short) var3 == 17) {
-                        return (short) -9;
-                    } else if ((short) var3 == 18) {
-                        return (short) -4;
-                    } else if ((short) var3 != 0) {
-                        return (short) -8;
+                    byte result = pro.send();
+                    if (result == RES_CMD_PERF_SESSION_TERM_USER) {
+                        return -3;
+                    } else if (result == RES_CMD_PERF_BACKWARD_MOVE_REQ) {
+                        return -9;
+                    } else if (result == RES_CMD_PERF_NO_RESP_FROM_USER) {
+                        return -4;
+                    } else if (result != RES_CMD_PERF) {
+                        return -8;
                     } else {
-                        ProactiveResponseHandler var8 = ProactiveResponseHandler.getTheHandler();
-                        var3 = (short) ((byte) ((short) (var8.getItemIdentifier() - 1)));
-                        if ((short) var3 < 0) {
-                            return (short) -5;
+                        ProactiveResponseHandler proResp = ProactiveResponseHandler.getTheHandler();
+                        byte itemIdentifier = (byte) (proResp.getItemIdentifier() - 1);
+                        if (itemIdentifier < 0) {
+                            return -5;
                         } else {
-                            var6 = (short) ((short) ((short) var2 + 1));
-                            var6 = (short) ((short) ((short) var6 + (short) (var1[(short) var6] + 1)));
+                            offset = (short) (parsedOffset + 1);
+                            offset += (short) (PARSED_MESSAGE[offset] + 1);
                             
-                            for (short var9 = (short) 0; (short) var9 < (short) var3; var9 = (short) ((byte) ((short) ((short) var9 + 1)))) {
-                                var6 = (short) ((short) ((short) var6 + (short) (var1[(short) var6] + 1)));
-                                var6 = (short) ((short) ((short) var6 + (short) (var1[(short) var6] + 1)));
+                            for (byte j = 0; j < itemIdentifier; j++) {
+                                offset += (short) (PARSED_MESSAGE[offset] + 1);
+                                offset += (short) (PARSED_MESSAGE[offset] + 1);
                             }
                             
-                            if (var1[(short) ((short) var6 + 1)] == -112) {
-                                return (short) -6;
+                            if (PARSED_MESSAGE[offset + 1] == 0x90) { // 0x90 = -112
+                                return -6;
                             } else {
-                                return (short) ((short) var6 + 1);
+                                return (short) (offset + 1);
                             }
                         }
                     }
@@ -934,34 +923,29 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         }
     }
     
-    private void method_token255_descoff965(byte[] var1, short var2, byte[] var3, short var4) {
-        short var5 = (short) ((short) var2);
-        short var6 = (short) ((short) var4);
-        short var7 = (short) 0;
-        short var10001 = (short) var6;
-        var6 = (short) ((short) ((short) var6 + 1));
-        short var10003 = (short) var5;
-        var5 = (short) ((short) ((short) var5 + 1));
-        short var9 = (short) (var3[var10001] = var1[var10003]);
+    // method_token255_descoff965
+    private void workWithBuffers(byte[] bufferSrc, short offsetSrc, byte[] bufferDst, short offsetDst) {
+        short value = 0;
+        short var9 = (bufferDst[offsetDst++] = bufferSrc[offsetSrc++]);
         
-        for (short var12 = (short) 0; (short) var12 < (short) var9; var12 = (short) ((byte) ((short) ((short) var12 + 1)))) {
-            var10001 = (short) var5;
-            var5 = (short) ((short) ((short) var5 + 1));
-            short var11 = (short) var1[var10001];
-            Util.arrayCopy(var1, (short) var5, this.byteBuffer, (short) 0, (short) var11);
-            short var10 = (short) this.byteBuffer[0];
-            short var8 = (short) ((short) (this.byteBuffer[(short) ((short) var11 - 1)] & 255));
-            var10001 = (short) var6;
-            var6 = (short) ((short) ((short) var6 + 1));
-            var3[var10001] = (byte) ((short) var11);
-            var5 = (short) ((short) ((short) var5 + (short) ((short) var11 - 1)));
-            var7 = (short) this.method_token255_descoff977(var1, (short) var5, var3, (short) ((short) var6 + (short) var11));
-            Util.setShort(PARSED_MESSAGE, (short) (622 + (short) ((short) var12 * 2)), (short) var7);
-            var5 = (short) ((short) ((short) var5 + (short) ((short) var8 + 1)));
-            this.byteBuffer[0] = (byte) ((short) var10);
-            this.byteBuffer[(short) ((short) var11 - 1)] = (byte) ((short) var7);
-            Util.arrayCopy(this.byteBuffer, (short) 0, var3, (short) var6, (short) var11);
-            var6 = (short) ((short) ((short) var6 + (short) ((short) var11 + (short) var7)));
+        for (short i = 0; i < var9; i++) {
+            byte length = bufferSrc[offsetSrc++];
+            
+            Util.arrayCopy(bufferSrc, offsetSrc, this.byteBuffer, (short) 0, length);
+            
+            byte savedFirstByte = this.byteBuffer[0];
+            short var8 = (short) (this.byteBuffer[length - 1] & 255);
+            bufferDst[offsetDst++] = length;
+            offsetSrc = (short) (offsetSrc + length - 1);
+            
+            value = this.allocateStringToBuffer(bufferSrc, offsetSrc, bufferDst, (short) (offsetDst + length));
+            Util.setShort(PARSED_MESSAGE, (short) (622 + (i * 2)), value);
+            
+            offsetSrc = (short) (offsetSrc + var8 + 1);
+            this.byteBuffer[0] = savedFirstByte;
+            this.byteBuffer[length - 1] = (byte) value;
+            Util.arrayCopy(this.byteBuffer, (short) 0, bufferDst, offsetDst, length);
+            offsetDst = (short) (offsetDst + length + value);
         }
         
     }
@@ -1456,44 +1440,55 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         } catch (SIMViewException ex) {}
     }
     
-    private short method_token255_descoff977(byte[] buffer, short bufferOffset, byte[] bufferDst, short bufferDstOffset) {
-        short var5 = 0;
-        short var6 = 0;
-        short var7 = 0;
-        short var8 = 0;
-        short var9 = this.field_token26_descoff856;
-        short var10 = 0;
-        short var11 = (short) (this.byteBuffer.length / 2);
-        short var13 = 127;
+    // method_token255_descoff977
+    private short allocateStringToBuffer(byte[] buffer, short bufferOffset, byte[] bufferDst, short bufferDstOffset) {
+        short i = 0;
+        // short startIndex = 0;
+        short byteBufferOffset = 0;
+        short maxLen = 0;
+        short unicode = this.unicodePattern;
+        short letter = 0;
+        short byteBufferLen = (short) (this.byteBuffer.length / 2); // 41 / 2
         
-        short limit = Util.makeShort((byte) 0, buffer[bufferOffset++]);
+        short len = Util.makeShort((byte) 0, buffer[bufferOffset++]);
+        // 1: bufferOffset 33, len = 13
         
-        for (var6 = limit; var5 < var6; bufferDstOffset = Util.arrayCopy(this.byteBuffer, (short) 0, bufferDst, bufferDstOffset, var7)) {
-            if (var6 - var5 > var11) {
-                var8 = var11;
+        // for (startIndex = len; var5 < startIndex; bufferDstOffset = Util.arrayCopy(this.byteBuffer, (short) 0, bufferDst, bufferDstOffset, var7)) {
+        for (; i < len; bufferDstOffset = Util.arrayCopy(this.byteBuffer, (short) 0, bufferDst, bufferDstOffset, byteBufferOffset)) {
+            
+            // 0: 13 - 0 = 13
+            if (len - i > byteBufferLen) {
+                maxLen = byteBufferLen;
             } else {
-                var8 = (short) (var6 - var5);
+                // 0: maxLen = 13
+                maxLen = (short) (len - i);
             }
             
-            Util.arrayCopy(buffer, bufferOffset, this.byteBuffer, var8, var8);
-            bufferOffset = (short) (bufferOffset + var8);
-            var5 = (short) (var5 + var8);
-            var7 = 0;
+            Util.arrayCopy(buffer, bufferOffset, this.byteBuffer, maxLen, maxLen);
             
-            for (short j = var8; j < (short) (var8 * 2); j++) {
-                if ((this.byteBuffer[j] & 0x80) == 0) {
-                    this.byteBuffer[var7++] = 0;
-                    this.byteBuffer[var7++] = this.byteBuffer[j];
-                } else {
-                    var10 = (short) (this.byteBuffer[j] & var13);
-                    var10 = (short) (var10 + var9);
-                    Util.setShort(this.byteBuffer, var7, var10);
-                    var7 = (short) (var7 + 2);
+            bufferOffset = (short) (bufferOffset + maxLen);
+            // 0: bufferOffset = 33 + 13 = 46
+            i = (short) (i + maxLen);
+            // 0: i = 0 + 13 = 13
+            
+            byteBufferOffset = 0;
+            
+            // 0: from j=13 to j<26
+            for (short j = maxLen; j < (short) (maxLen * 2); j++) {
+                // если буква русская, т.е. 7й бит = 1
+                if ((this.byteBuffer[j] & 0x80) == 0) { // символ ASCII, добавляем 0 в старший байт
+                    this.byteBuffer[byteBufferOffset++] = 0;
+                    this.byteBuffer[byteBufferOffset++] = this.byteBuffer[j];
+                } else { // кириллица, делаем шорт из байта
+                    letter = (short) (this.byteBuffer[j] & 0x7F);
+                    letter = (short) (letter + unicode); // 0x0400 + 12 = 0x0412 = В
+                    Util.setShort(this.byteBuffer, byteBufferOffset, letter);
+                    byteBufferOffset = (short) (byteBufferOffset + 2);
                 }
             }
         }
         
-        return (short) (var6 * 2);
+        return (short) (len * 2);
     }
     
     // method_token255_descoff1169
@@ -1851,7 +1846,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         // eventSmsPPDataDownload: var2 = 2; var3 = false; - SMS_PP
         // eventMenuSelection: var2 = 3; var3 = true; - MENU_SELECTION
         
-        short var6 = (short) 1;
+        // short var6 = 1;
         boolean flag = false;
         
         for (byte i = 0; i < cycleLimit; i++) {
@@ -1861,18 +1856,12 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                 var3 = true;
             }
             
-            if (source != SMS_PP && source != MENU_SELECTION) {
-                var6 = (short) 1; // ICB
-            } else {
-                var6 = (short) -1; // SMS or MENU
-            }
-            
             if (result == 0x10) { // 0x10 = 16
                 if (this.field_token25_descoff849 != 2 && this.field_token25_descoff849 != 4) {
                     this.shortBuffer[5] = (short) (this.shortBuffer[0] + this.shortBuffer[3]);
                 } else {
                     this.shortBuffer[5] = 552;
-                    this.method_token255_descoff965(EXTENDED_BUFFER, (short) (this.shortBuffer[0] + this.shortBuffer[3]), EXTENDED_BUFFER, this.shortBuffer[5]);
+                    this.workWithBuffers(EXTENDED_BUFFER, (short) (this.shortBuffer[0] + this.shortBuffer[3]), EXTENDED_BUFFER, this.shortBuffer[5]);
                 }
                 
                 if (source == SMS_PP && var3 && sfield_token255_descoff268_staticref56 != this.firstByteMarkerClass && !this.field_token28_descoff870) {
@@ -1884,7 +1873,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     this.playTone();
                 }
                 
-                this.processShowMessageAndParseResult(this.field_token25_descoff849 != 0, (byte) var6, this.shortBuffer[5], var3, source == SMS_PP);
+                this.processShowMessageAndParseResult(this.field_token25_descoff849 != 0, this.shortBuffer[5], var3, source);
             } else {
                 result = 0x12; // 0x12 = 18
                 this.parsedMsgBufferOffset = -6;
@@ -2010,16 +1999,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
     // method_token255_descoff12411
     /* вызывается только с одного места, с function_DO_1 */
     private boolean function_DO_1_1(short bufferOffset, boolean var2, byte headerSecondByte, byte headerThirdByte) {
-        short var6 = 0;
-        short var8 = 0;
         
-        short var11 = 0;
-        short var12 = 0;
-        short var13 = 1;
-        short var14 = 1;
-        short var15 = 0;
-        short var16 = 1;
-        short var19 = 0;
         this.field_token31_descoff891 = false;
         // 0x06 - check bit 1 and 2
         this.field_token25_descoff849 = (byte) (headerSecondByte & 0x06); // 0x32 & 0x06 = 0x02
@@ -2041,11 +2021,11 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
         if (this.field_token25_descoff849 == 2) {
             // 0x7F80 = 32640
             // EX[4] = 0x08 << 7 = 0x0400 & 0x7F80 = 0x0400
-            this.field_token26_descoff856 = (short) ((EXTENDED_BUFFER[offset++] << 7) & 0x7F80);
+            this.unicodePattern = (short) ((EXTENDED_BUFFER[offset++] << 7) & 0x7F80);
             // offset 5
             
         } else if (this.field_token25_descoff849 == 4) {
-            this.field_token26_descoff856 = Util.getShort(EXTENDED_BUFFER, offset);
+            this.unicodePattern = Util.getShort(EXTENDED_BUFFER, offset);
             offset = (short) (offset + 2);
         }
         
@@ -2127,51 +2107,61 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                 // parsedOffset = 22
                 PARSED_MESSAGE[32 + parsedOffset] = (byte) 0x80; // 0x80 = -128;
                 parsedOffset++;
-                PARSED_MESSAGE[32 + savedParsedOffset] = (byte) (parsedOffset - savedParsedOffset - 1); // (22 - 21 - 1) = 0
+                // parsedOffset = 23
+                PARSED_MESSAGE[32 + savedParsedOffset] = (byte) (parsedOffset - savedParsedOffset - 1); // (23 - 21 - 1) = 1
                 PARSED_MESSAGE[31]++;
             }
         }
         
+        short tmpOffset = 0;
         short limit = 5;
-        short var9 = 0;
+        short length = 0;
         boolean var17 = false;
+        boolean var13 = true;
+        short var19 = 0;
+        short var12 = 0;
         
         for (byte counter = 0; counter < thirdByteLowValue && counter < limit; counter++) {
-            //offset 8 = 0xF0
+            // 0: offset 8 = 0xF0
+            // 1: offset 16 = 0xA3
             short nextByte = EXTENDED_BUFFER[offset];
-            var9 = 0;
-            var16 = 1;
-            var14 = 1;
-            var15 = 0;
-            var6 = (short) (nextByte & 0x70); // 0x70 = 112 (0xF0 & 0x70 = 0x70)
+            short var9 = 0;
+            boolean var16 = true;
+            boolean var14 = true;
+            boolean var15 = false;
+            short serviceType = (short) (nextByte & 0x70);
+            // 0: (0xF0 & 0x70 = 0x70)
+            // 1: (0xA3 & 0x70 = 0x20)
             
-            switch (var6) {
-                case 0x00:
-                case 0x20: // 0x20 = 32
-                case 0x30: // 0x30 = 48
-                case 0x50: // 0x50 = 80
-                case 0x60: // 0x60 = 96
-                    if (var6 == 0 && sfield_token255_descoff163_staticref38 != 2 && sfield_token255_descoff163_staticref38 != 3) {
-                        var14 = 0;
+            switch (serviceType) {
+                case 0x00: // 0x80 & 0x70
+                case 0x20: // 0xA0 & 0x70 //0x20 = 32
+                case 0x30: // 0xB0 & 0x70 //0x30 = 48
+                case 0x50: // 0xD0 & 0x70 //0x50 = 80
+                case 0x60: // 0xE0 & 0x70 //0x60 = 96
+                    if (serviceType == 0 && sfield_token255_descoff163_staticref38 != 2 && sfield_token255_descoff163_staticref38 != 3) {
+                        var14 = false;
                     }
                     
-                    var9 = (short) (1 + (nextByte & 0x0F)); // 0x0F = 15
-                    var9 = (short) (var9 + 1 + (EXTENDED_BUFFER[offset + var9] & 0x7F)); // 0x7F = 127
+                    var9 = (short) (1 + (nextByte & 0x0F));
+                    // 1: var9 = 4
+                    var9 = (short) (var9 + 1 + (EXTENDED_BUFFER[offset + var9] & 0x7F));
+                    // 1: var9 = 16
                     break;
-                case 0x10: // 0x10 = 16
-                case 0x40: // 0x40 = 64
-                    if (var6 == 0x40) {
+                case 0x10: // 0x90 & 0x70 // 0x10 = 16
+                case 0x40: // 0xC0 & 0x70 // 0x40 = 64
+                    if (serviceType == 0x40) {
                         this.field_token31_descoff891 = true;
                     }
                     
                     var9 = (short) (1 + (nextByte & 0x0F)); // 0x0F = 15
                     break;
-                case 0x70: // 0x70 = 112
-                    // offset 11+2 = 0x11
-                    var6 = EXTENDED_BUFFER[offset + 2];
-                    switch (var6) {
-                        case 2:
-                        case 3:
+                case 0x70: // 0xF0 & 0x70 //
+                    // 0: offset 8+2 = 0x11
+                    serviceType = EXTENDED_BUFFER[offset + 2];
+                    switch (serviceType) {
+                        case 0x02:
+                        case 0x03:
                             var9 = 1;
                             
                             for (var19 = 0; var9 < EXTENDED_BUFFER[offset + 1]; var19++) {
@@ -2179,7 +2169,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                             }
                             
                             if (sfield_token255_descoff191_staticref42 && var19 >= 2) {
-                                var15 = 1;
+                                var15 = true;
                             }
                             
                             var19 = 0;
@@ -2192,44 +2182,48 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                             var9 = 1;
                     }
                     
-                    if (var15 != 0) {
+                    if (var15) {
                         break;
                     }
                 default:
                     limit++;
-                    var16 = 0;
+                    var16 = false;
                     offset = (short) (offset + 2 + EXTENDED_BUFFER[offset + 1]);
-                    // offset 11+2+06 = 0xA0
-            }
+                    // 0: offset 8+2+06 = 16
+            } // end switch
             
-            if (var16 != 0) {
-                if (var14 != 0) {
+            if (var16) {
+                if (var14) {
                     PARSED_MESSAGE[31]++;
                 }
                 
-                var17 = ((nextByte & 0x80) == 0 ? false : true); // -128 = 0x80
-                var13 = 1;
+                var17 = ((nextByte & 0x80) == 0 ? false : true);
+                
+                var13 = true;
                 short var24;
-                if (!var17 && (var15 == 0 || var6 != 2 && var6 != 3 || var19 != 1)) {
-                    if (var14 != 0) {
-                        if (var15 != 0 && (var6 == 2 || var6 == 3)) {
+                if (!var17 && (!var15 || serviceType != 2 && serviceType != 3 || var19 != 1)) {
+                    if (var14) {
+                        if (var15 && (serviceType == 2 || serviceType == 3)) {
                             var12 = (short) (EXTENDED_BUFFER[offset + var9 + 2] + 1);
-                            var11 = this.findBaseItemsOffset(EXTENDED_BUFFER[offset + var9 + 2 + var12 + 1]);
+                            tmpOffset = this.findBaseItemsOffset(EXTENDED_BUFFER[offset + var9 + 2 + var12 + 1]);
                         } else {
-                            var11 = this.findBaseItemsOffset(EXTENDED_BUFFER[offset + var9]);
+                            tmpOffset = this.findBaseItemsOffset(EXTENDED_BUFFER[offset + var9]);
                         }
                         
-                        if (var11 != -1) {
-                            parsedOffset = (short) (parsedOffset + this.readSimMessageValueToBuffer(var11, PARSED_MESSAGE, (short) (32 + parsedOffset), true));
+                        if (tmpOffset != -1) {
+                            parsedOffset = (short) (parsedOffset + this.readSimMessageValueToBuffer(tmpOffset, PARSED_MESSAGE, (short) (32 + parsedOffset), true));
                         } else {
-                            var13 = 0;
+                            var13 = false;
                             PARSED_MESSAGE[31]--;
                         }
                     }
                 } else {
-                    var24 = 0x80; // -128 = 0x80
-                    short var25 = (short) (this.field_token25_descoff849 == 0 ? 0 : 1);
-                    if (var15 != 0 && (var6 == 2 || var6 == 3)) {
+                    var24 = 0x80;
+                    // field_token25_descoff849 = 2 (headerSecondByte & 0x06)
+                    boolean var25 = (this.field_token25_descoff849 != 0 ? true : false);
+                    
+                    // 1: var15 = false
+                    if (var15 && (serviceType == 2 || serviceType == 3)) {
                         var9 = (short) (var9 + 2);
                         var12 = (short) (EXTENDED_BUFFER[offset + var9] + 1);
                         var9 = (short) (var9 + var12);
@@ -2238,89 +2232,94 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                             var9 = (short) (var9 + var12 + 1 + 1 + 1);
                             var12 = (short) (EXTENDED_BUFFER[offset + var9] + 1);
                             var9 = (short) (var9 + var12);
-                            var8 = EXTENDED_BUFFER[offset + var9];
+                            length = EXTENDED_BUFFER[offset + var9];
                         } else {
-                            var8 = EXTENDED_BUFFER[offset + var9];
+                            length = EXTENDED_BUFFER[offset + var9];
                         }
                     } else {
-                        var8 = (short) EXTENDED_BUFFER[offset + var9];
-                        var12 = (short) (var8 + 1);
+                        // 1: offset = 16, var9 = 16
+                        length = (short) EXTENDED_BUFFER[offset + var9];
+                        var12 = (short) (length + 1);
                     }
                     
-                    if (var8 > 40) {
-                        var8 = 40;
+                    if (length > 40) {
+                        length = 40;
                     }
                     
+                    // field_token25_descoff849 = 2
                     if (this.field_token25_descoff849 != 2 && this.field_token25_descoff849 != 4) {
-                        if (var14 != 0) {
-                            if (var25 != 0) {
-                                PARSED_MESSAGE[32 + parsedOffset] = (byte) (var8 + 1);
+                        if (var14) {
+                            if (var25) {
+                                PARSED_MESSAGE[32 + parsedOffset] = (byte) (length + 1);
                                 PARSED_MESSAGE[32 + parsedOffset + 1] = (byte) var24;
                                 parsedOffset = (short) (parsedOffset + 2);
                             } else {
-                                PARSED_MESSAGE[32 + parsedOffset] = (byte) ((short) var8);
+                                PARSED_MESSAGE[32 + parsedOffset] = (byte) length;
                                 parsedOffset++;
                             }
                             
-                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + var9 + 1), PARSED_MESSAGE, (short) (32 + parsedOffset), var8);
-                            if (var15 == 0) {
+                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + var9 + 1), PARSED_MESSAGE, (short) (32 + parsedOffset), length);
+                            if (!var15) {
                                 var9 = (short) (var9 + var12);
                             }
                             
-                            parsedOffset = (short) (parsedOffset + var8);
+                            parsedOffset = (short) (parsedOffset + length);
                         }
                     } else {
-                        if (var14 != 0) {
-                            var8 = this.method_token255_descoff977(EXTENDED_BUFFER, (short) (offset + var9), PARSED_MESSAGE, (short) (32 + parsedOffset + 2));
-                            PARSED_MESSAGE[32 + parsedOffset] = (byte) ((var8 > 40 ? 40 : var8) + 1);
+                        // 1: var14 = true, offset = 16, var9 = 16, parsedOffset = 23
+                        if (var14) {
+                            length = this.allocateStringToBuffer(EXTENDED_BUFFER, (short) (offset + var9), PARSED_MESSAGE, (short) (32 + parsedOffset + 2));
+                            // 1: length = 26
+                            PARSED_MESSAGE[32 + parsedOffset] = (byte) ((length > 40 ? 40 : length) + 1);
                             PARSED_MESSAGE[32 + parsedOffset + 1] = (byte) var24;
                             parsedOffset = (short) (parsedOffset + PARSED_MESSAGE[32 + parsedOffset] + 1);
                         }
                         
-                        if (var15 == 0) {
+                        if (!var15) {
                             var9 = (short) (var9 + var12);
                         }
                     }
+                } // end if else
+                
+                if (!var14) {
+                    var13 = false;
                 }
                 
-                if (var14 == 0) {
-                    var13 = 0;
-                }
-                
-                if (var13 != 0) {
-                    var11 = parsedOffset;
+                // 1: var13 = true
+                if (var13) {
+                    tmpOffset = parsedOffset;
                     parsedOffset++;
-                    PARSED_MESSAGE[32 + parsedOffset] = (byte) var6;
+                    PARSED_MESSAGE[32 + parsedOffset] = (byte) serviceType;
                     parsedOffset++;
                 }
                 
-                var8 = (short) (nextByte & 15);
-                shortNumberLen = (byte) var8;
-                if (var8 > 11) {
-                    var8 = 11;
+                length = (short) (nextByte & 15);
+                shortNumberLen = (byte) length;
+                if (length > 11) {
+                    length = 11;
                 }
                 
-                if (var6 == 16 || var6 == 0 || var6 == 48 || var6 == 32 || var6 == 96 || var6 == 80) {
-                    if (var13 != 0) {
-                        if (var8 > 0) {
-                            PARSED_MESSAGE[32 + parsedOffset] = (byte) (var8 + 1);
-                            if (var6 != 16) {
-                                var24 = (short) ((var8 - 1) * 2);
-                                if ((EXTENDED_BUFFER[offset + 1 + var8 - 1] & -16) == -16) {
+                if (serviceType == 0 || serviceType == 0x10 || serviceType == 0x20 || serviceType == 0x30 || serviceType == 0x50 || serviceType == 0x60) {
+                    if (var13) {
+                        if (length > 0) {
+                            PARSED_MESSAGE[32 + parsedOffset] = (byte) (length + 1);
+                            if (serviceType != 0x10) {
+                                var24 = (short) ((length - 1) * 2);
+                                if ((EXTENDED_BUFFER[offset + 1 + length - 1] & 0xF0) == 0xF0) {
                                     var24--;
                                 }
                             } else {
-                                var24 = var8;
+                                var24 = length;
                             }
                             
                             parsedOffset++;
                             PARSED_MESSAGE[32 + parsedOffset] = (byte) var24;
                             parsedOffset++;
-                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) (32 + parsedOffset), var8);
-                            parsedOffset = (short) (parsedOffset + var8);
+                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) (32 + parsedOffset), length);
+                            parsedOffset = (short) (parsedOffset + length);
                         } else {
                             PARSED_MESSAGE[32 + parsedOffset] = (byte) (this.shortNumber1LenGlobal + 1);
-                            if (var6 != 16) {
+                            if (serviceType != 0x10) {
                                 var24 = (short) ((this.shortNumber1LenGlobal - 1) * 2);
                                 if ((PARSED_MESSAGE[this.shortNumber1LenGlobal - 1] & 0xF0) == 0xF0) { // 0xF0 = -16
                                     var24--;
@@ -2335,67 +2334,67 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                             Util.arrayCopy(PARSED_MESSAGE, (short) 0, PARSED_MESSAGE, (short) (32 + parsedOffset), this.shortNumber1LenGlobal);
                             parsedOffset = (short) (parsedOffset + this.shortNumber1LenGlobal);
                         }
-                    }
+                    } // end if
                     
                     offset = (short) (offset + 1 + shortNumberLen);
-                }
+                } // end if
                 
-                if (var6 == 0 || var6 == 48 || var6 == 32 || var6 == 96 || var6 == 80) {
+                if (serviceType == 0x00 || serviceType == 0x20 || serviceType == 0x30 || serviceType == 0x50 || serviceType == 0x60) {
                     var24 = EXTENDED_BUFFER[offset];
-                    var8 = (short) (var24 & 0x7F); // 0x7F = 127
-                    shortNumberLen = (byte) var8;
-                    if (var8 > 20) {
-                        var8 = 20;
+                    length = (short) (var24 & 0x7F); // 0x7F = 127
+                    shortNumberLen = (byte) length;
+                    if (length > 20) {
+                        length = 20;
                     }
                     
-                    if (var13 != 0) {
-                        if (var8 > 0) {
-                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) (32 + parsedOffset + 1), var8);
+                    if (var13) {
+                        if (length > 0) {
+                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1), PARSED_MESSAGE, (short) (32 + parsedOffset + 1), length);
                         } else {
-                            var8 = this.shortNumber2LenGlobal;
-                            Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) (32 + parsedOffset + 1), var8);
+                            length = this.shortNumber2LenGlobal;
+                            Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) (32 + parsedOffset + 1), length);
                         }
                         
                         if ((var24 & 0x80) != 0) { // -128 = 0x80
-                            PARSED_MESSAGE[32 + parsedOffset + var8 + 1] = 32;
-                            PARSED_MESSAGE[32 + parsedOffset + var8 + 2] = (byte) (counter + 1 + 48);
-                            var8 = (short) (var8 + 2);
+                            PARSED_MESSAGE[32 + parsedOffset + length + 1] = 0x20;
+                            PARSED_MESSAGE[32 + parsedOffset + length + 2] = (byte) (counter + 1 + 48);
+                            length = (short) (length + 2);
                         }
                         
-                        if (var6 == 0) {
-                            PARSED_MESSAGE[32 + parsedOffset + var8 + 1] = 32;
-                            PARSED_MESSAGE[32 + parsedOffset + var8 + 2] = (byte) (sfield_token255_descoff163_staticref38 + 48);
-                            var8 = (short) (var8 + 2);
+                        if (serviceType == 0) {
+                            PARSED_MESSAGE[32 + parsedOffset + length + 1] = 0x20;
+                            PARSED_MESSAGE[32 + parsedOffset + length + 2] = (byte) (sfield_token255_descoff163_staticref38 + 48);
+                            length = (short) (length + 2);
                         }
                         
-                        PARSED_MESSAGE[32 + parsedOffset] = (byte) var8;
-                        parsedOffset = (short) (parsedOffset + var8 + 1);
-                    }
+                        PARSED_MESSAGE[32 + parsedOffset] = (byte) length;
+                        parsedOffset = (short) (parsedOffset + length + 1);
+                    } // end if
                     
                     offset = (short) (offset + shortNumberLen + 1);
-                }
+                } // end if
                 
-                if (var6 == 2 || var6 == 3) {
-                    var8 = EXTENDED_BUFFER[offset + 1 + 2];
-                    shortNumberLen = (byte) var8;
-                    if (var8 > 20) {
-                        var8 = 20;
+                if (serviceType == 2 || serviceType == 3) {
+                    length = EXTENDED_BUFFER[offset + 1 + 2];
+                    shortNumberLen = (byte) length;
+                    if (length > 20) {
+                        length = 20;
                     }
                     
-                    if (var13 != 0) {
-                        if (var8 > 0) {
-                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1 + 3), PARSED_MESSAGE, (short) (32 + parsedOffset + 1), var8);
+                    if (var13) {
+                        if (length > 0) {
+                            Util.arrayCopy(EXTENDED_BUFFER, (short) (offset + 1 + 3), PARSED_MESSAGE, (short) (32 + parsedOffset + 1), length);
                         } else {
-                            var8 = this.shortNumber2LenGlobal;
-                            Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) (32 + parsedOffset + 1), var8);
+                            length = this.shortNumber2LenGlobal;
+                            Util.arrayCopy(PARSED_MESSAGE, (short) 11, PARSED_MESSAGE, (short) (32 + parsedOffset + 1), length);
                         }
                         
-                        PARSED_MESSAGE[32 + parsedOffset] = (byte) var8;
-                        parsedOffset = (short) (parsedOffset + var8 + 1);
+                        PARSED_MESSAGE[32 + parsedOffset] = (byte) length;
+                        parsedOffset = (short) (parsedOffset + length + 1);
                     }
-                }
+                } // end if
                 
-                if (var15 != 0) {
+                if (var15) {
                     offset = (short) (offset + EXTENDED_BUFFER[offset + 1] + 1 + 1);
                     if (var19 == 1) {
                         offset = (short) (offset + EXTENDED_BUFFER[offset + 1] + 1 + 1);
@@ -2403,7 +2402,7 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                         counter++;
                     }
                 } else {
-                    if (var6 == 64) {
+                    if (serviceType == 0x40) {
                         offset++;
                     }
                     
@@ -2412,13 +2411,13 @@ public class StkAppletSmsIcb extends Applet implements Shareable, ToolkitInterfa
                     } else {
                         offset++;
                     }
-                }
+                } // end if
                 
-                if (var13 != 0) {
-                    PARSED_MESSAGE[32 + var11] = (byte) (parsedOffset - var11 - 1);
+                if (var13) {
+                    PARSED_MESSAGE[32 + tmpOffset] = (byte) (parsedOffset - tmpOffset - 1);
                 }
-            }
-        }
+            } // end if
+        } // end for
         
         if (flowState != READY || this.field_token28_descoff870) {
             short itemOffset = this.findBaseItemsOffset(TAG_BASE_ITEM_MAIN);
